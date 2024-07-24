@@ -22,9 +22,7 @@
 			/>
 		</div>
 		<div class="mt-4 w-2/3 text-center">
-			<button class="variant-filled-tertiary btn" on:click={SendResetPwdEmail}
-				>Send reset password email</button
-			>
+			<button class="variant-filled-tertiary btn" type="submit">Send reset password email</button>
 		</div>
 	</div>
 </form>
