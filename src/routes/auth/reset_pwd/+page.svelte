@@ -60,6 +60,7 @@
 				type="password"
 				class="input p-2 font-extrabold text-primary-400 focus:bg-secondary-400 focus:outline-none"
 				placeholder="Please type a new password ..."
+				required
 				bind:value={pwd}
 			/>
 		</div>
@@ -69,6 +70,7 @@
 				type="password"
 				class="input p-2 font-extrabold text-primary-400 focus:bg-secondary-400 focus:outline-none"
 				placeholder="Please confirm your password ..."
+				required
 				bind:value={pwd2}
 			/>
 		</div>

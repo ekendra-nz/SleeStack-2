@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Login from '$lib/components/auth_ui/Login.svelte';
 	import Icon from '@iconify/svelte';
 
 	let email: string = 'le.pattillo.nz@gmail.com';
@@ -82,6 +83,13 @@
 					</div>
 				</form>
 			</div>
+		</div>
+	</div>
+</div>
+<div class="mt-20 flex items-center justify-center">
+	<div class=" flex flex-col items-center space-y-10 text-center">
+		<div class="card variant-glass-primary mr-auto w-72 border border-primary-500 p-4 shadow-xl">
+			<Login />
 		</div>
 	</div>
 </div>

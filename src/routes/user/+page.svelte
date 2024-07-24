@@ -3,6 +3,11 @@
 	import type { EventHandler } from 'svelte/elements';
 	import type { PageData } from './$types';
 
+	// Toast
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	import type { ToastSettings } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+
 	export let data: PageData;
 	$: ({ notes, supabase, user } = data);
 
@@ -11,6 +16,21 @@
 
 		if (email) {
 			const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+			if (error) {
+				const toast: ToastSettings = {
+					message: error.message,
+					background: 'variant-filled-error',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+			} else {
+				const toast: ToastSettings = {
+					message: 'Reset password email sent',
+					background: 'variant-filled-success',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+			}
 		}
 	}
 
@@ -25,7 +45,23 @@
 		if (!note) return;
 
 		const { error } = await supabase.from('notes').insert({ note });
-		if (error) console.error(error);
+
+		if (error) {
+			console.error(error);
+			const toast: ToastSettings = {
+				message: error.message,
+				background: 'variant-filled-error',
+				timeout: 5000
+			};
+			toastStore.trigger(toast);
+		} else {
+			const toast: ToastSettings = {
+				message: 'Note added successfully!',
+				background: 'variant-filled-success',
+				timeout: 2000
+			};
+			toastStore.trigger(toast);
+		}
 
 		invalidate('supabase:db:notes');
 		form.reset();
