@@ -2,7 +2,7 @@
 	import Icon from '@iconify/svelte';
 
 	let email: string = 'le.pattillo.nz@gmail.com';
-	let pwd: string = 'gleestack';
+	let pwd: string = 'pleestack';
 
 	// import type { PageData } from './$types';
 
