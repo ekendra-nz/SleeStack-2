@@ -1,4 +1,11 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+
+	// Toast
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	import type { ToastSettings } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+
 	export let data;
 	$: ({ supabase } = data);
 
@@ -6,6 +13,23 @@
 	async function SendResetPwdEmail() {
 		if (email) {
 			const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+			// toast and redirect
+			if (error) {
+				const toast: ToastSettings = {
+					message: error.message,
+					background: 'variant-filled-error',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+			} else {
+				const toast: ToastSettings = {
+					message: 'Reset password email sent',
+					background: 'variant-filled-success',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+				goto('/');
+			}
 		}
 	}
 </script>

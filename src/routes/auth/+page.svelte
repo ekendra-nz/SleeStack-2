@@ -4,18 +4,12 @@
 	let email: string = 'le.pattillo.nz@gmail.com';
 	let pwd: string = 'pleestack';
 
-	// import type { PageData } from './$types';
-
-	// export let data: PageData;
-	// $: ({ supabase, user } = data);
-
 	let loading: boolean = false;
 
 	const handleSubmit = async (evt: SubmitEvent) => {
 		// evt.preventDefault();
 		loading = true;
-		console.log('submitting');
-		console.log(email, pwd);
+		// console.log('submitting');
 	};
 </script>
 

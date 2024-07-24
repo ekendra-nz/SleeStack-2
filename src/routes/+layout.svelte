@@ -5,6 +5,7 @@
 	import { initializeStores, Drawer } from '@skeletonlabs/skeleton';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { Toast } from '@skeletonlabs/skeleton';
 
 	initializeStores();
 
@@ -29,6 +30,9 @@
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 </script>
 
+<Toast />
+
+<!-- <AppShell>...</AppShell> -->
 <div class="min-h-screen">
 	<div class="flex min-h-screen flex-col">
 		<!-- Header  -->

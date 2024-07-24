@@ -1,7 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 
 import type { Actions } from './$types';
-
 export const actions: Actions = {
 	signup: async ({ request, locals: { supabase } }) => {
 		const formData = await request.formData();
