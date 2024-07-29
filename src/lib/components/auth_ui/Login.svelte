@@ -1,5 +1,94 @@
 <script lang="ts">
-	// password stuff
+	import Icon from '@iconify/svelte';
+	// Forms
+	import type { ActionResult } from '@sveltejs/kit';
+	import { applyAction, deserialize } from '$app/forms';
+	import { invalidateAll, goto } from '$app/navigation';
+
+	// Toast
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	import type { ToastSettings } from '@skeletonlabs/skeleton';
+	const toastStore = getToastStore();
+
+	let email: string = '';
+	let pwd: string = '';
+	let loading: boolean = false;
+	let rego: boolean = false;
+
+	const handleSubmit = async (event: { currentTarget: EventTarget & HTMLFormElement }) => {
+		// UI stuff
+		loading = true;
+		// evt.preventDefault();
+		const data = new FormData(event.currentTarget);
+		console.log('data', data.entries);
+		if (rego) {
+			// sign up
+			const response = await fetch('?/signup', {
+				method: 'POST',
+				body: data
+			});
+
+			const result: ActionResult = deserialize(await response.text());
+
+			if (result.type === 'success') {
+				const toast: ToastSettings = {
+					message:
+						'Verification email sent to <strong>' +
+						email +
+						'</strong>. <br />Follow the link in your email to continue.',
+					background: 'variant-filled-success',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+				// rerun all `load` functions, following the successful update
+				await invalidateAll();
+			} else if (result.type === 'failure') {
+				const toast: ToastSettings = {
+					message:
+						'There was a problem sending a verification email to <strong>' +
+						email +
+						'</strong>. It could be something on our end, but please double check your email address and try again.',
+					background: 'variant-filled-error',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+			}
+			applyAction(result);
+		} else {
+			// sign in
+			const response = await fetch('?/signin', {
+				method: 'POST',
+				body: data
+			});
+
+			const result: ActionResult = deserialize(await response.text());
+
+			if (result.type === 'success') {
+				const toast: ToastSettings = {
+					message: 'Signed in.',
+					background: 'variant-filled-success',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+				// rerun all `load` functions, following the successful update
+				await invalidateAll();
+			} else if (result.type === 'failure') {
+				console.log('result.data', result.data);
+				const toast: ToastSettings = {
+					message:
+						'There was a problem signing you in: <strong> ' + result.data?.error + '</strong>',
+					background: 'variant-filled-error',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+				await invalidateAll();
+			}
+			applyAction(result);
+			loading = false;
+		}
+	};
+
+	// password stuff ---------------------------------------------------------------------------
 
 	let strength = 0;
 	let validations: any = [];
@@ -12,21 +101,23 @@
 			password.length > 5,
 			password.search(/[A-Z]/) > -1,
 			password.search(/[0-9]/) > -1,
-			password.search(/[$&+,:;=?@#]/) > -1
+			password.search(/[$&+,:;=?@#!]/) > -1
 		];
 
 		strength = validations.reduce((acc: any, cur: any) => acc + cur);
 	}
 </script>
 
-<form>
-	<div class="field">
-		<input type="email" name="email" class="input" placeholder=" " />
+<form method="POST" on:submit|preventDefault={handleSubmit}>
+	<div class="field emailfield">
+		<input type="email" name="email" class="input" placeholder=" " bind:value={email} />
 		<label for="email" class="label">Email</label>
 	</div>
 
-	<div class="field">
+	<div class="field pwdfield">
 		<input
+			id="password"
+			name="password"
 			type={showPassword ? 'text' : 'password'}
 			class="input"
 			placeholder=" "
@@ -38,37 +129,126 @@
 			class="toggle-password"
 			on:mouseenter={() => (showPassword = true)}
 			on:mouseleave={() => (showPassword = false)}
+			role="button"
+			tabindex="0"
 		>
 			{showPassword ? '🙈' : '👁‍🗨'}
 		</div>
 	</div>
 
 	<div class="strength">
-		<span class="bar bar-1" class:bar-show={strength > 0}></span>
-		<span class="bar bar-2" class:bar-show={strength > 1}></span>
-		<span class="bar bar-3" class:bar-show={strength > 2}></span>
-		<span class="bar bar-4" class:bar-show={strength > 3}></span>
+		<span class="bar bar-1 variant-ghost-primary rounded-xl" class:bar-show={strength > 0}></span>
+		<span class="bar bar-2 rounded-xl" class:bar-show={strength > 1}></span>
+		<span class="bar bar-3 rounded-xl" class:bar-show={strength > 2}></span>
+		<span class="bar bar-4 rounded-xl" class:bar-show={strength > 3}></span>
 	</div>
 
-	<ul>
-		<li>{validations[0] ? '✅' : '❌'} must be at least 5 characters</li>
-		<li>{validations[1] ? '✅' : '❌'} must contain a capital letter</li>
-		<li>{validations[2] ? '✅' : '❌'} must contain a number</li>
-		<li>{validations[3] ? '✅' : '❌'} must contain one of $&+,:;=?@#</li>
+	<ul class="valids">
+		<li class="flex flex-row items-center">
+			<div class="flex">
+				{#if validations[0]}
+					<Icon icon="gg:check-o" width="1.2em" height="1.2em" class="text-success-500" />
+				{:else}
+					<Icon
+						icon="icon-park-outline:error"
+						width="1.2em"
+						height="1.2em"
+						class=" text-error-500"
+					/>
+				{/if}
+			</div>
+			<div class="ml-1 flex">must be at least 6 characters</div>
+		</li>
+		<li class="flex flex-row items-center">
+			<div class="flex">
+				{#if validations[1]}
+					<Icon icon="gg:check-o" width="1.2em" height="1.2em" class="text-success-500" />
+				{:else}
+					<Icon
+						icon="icon-park-outline:error"
+						width="1.2em"
+						height="1.2em"
+						class=" text-error-500"
+					/>
+				{/if}
+			</div>
+			<div class="ml-1 flex">must contain a capital letter</div>
+		</li>
+		<li class="flex flex-row items-center">
+			<div class="flex">
+				{#if validations[2]}
+					<Icon icon="gg:check-o" width="1.2em" height="1.2em" class="text-success-500" />
+				{:else}
+					<Icon
+						icon="icon-park-outline:error"
+						width="1.2em"
+						height="1.2em"
+						class=" text-error-500"
+					/>
+				{/if}
+			</div>
+			<div class="ml-1 flex">must contain a number</div>
+		</li>
+		<li class="flex flex-row items-center">
+			<div class="flex">
+				{#if validations[3]}
+					<Icon icon="gg:check-o" width="1.2em" height="1.2em" class="text-success-500" />
+				{:else}
+					<Icon
+						icon="icon-park-outline:error"
+						width="1.2em"
+						height="1.2em"
+						class=" text-error-500"
+					/>
+				{/if}
+			</div>
+			<div class="ml-1 flex">must contain at least one: $&+,:;=?@#!</div>
+		</li>
 	</ul>
+
+	<div class="mx-5 mt-5 flex flex-row items-center">
+		<div class="ml-10 flex-auto">
+			<button
+				class="variant-ghost-tertiary btn btn-sm"
+				type="submit"
+				formaction="?/signup"
+				on:click={() => (rego = true)}>Register</button
+			>
+		</div>
+		<div class="flex-auto">or</div>
+		<div class="mr-10 flex-auto">
+			<button class="variant-filled-tertiary btn btn-sm" type="submit">Sign In</button>
+		</div>
+		<div class="mr-2 flex">
+			{#if !loading}
+				<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
+			{:else}
+				<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
+			{/if}
+		</div>
+	</div>
 </form>
 
 <style>
 	form {
 		--text-color: #38d1e2;
-		max-width: 500px;
+		/* max-width: 500px; */
 	}
-
-	.field {
+	.valids {
+		margin-top: 1rem;
+		text-align: left;
+	}
+	.emailfield {
 		width: 100%;
 		position: relative;
 		border-bottom: 2px dashed var(--text-color);
-		margin: 4rem auto 1rem;
+		margin: 1.5rem auto 3rem;
+	}
+	.pwdfield {
+		width: 100%;
+		position: relative;
+		border-bottom: 2px dashed var(--text-color);
+		margin: 2rem auto 0.5rem;
 	}
 
 	.label {
@@ -82,7 +262,7 @@
 		overflow: hidden;
 		margin: 0;
 		width: 100%;
-		padding: 0.25rem 0;
+		padding: 0.25rem;
 		background: none;
 		color: white;
 		font-size: 1.2rem;
@@ -144,7 +324,7 @@
 	}
 
 	.bar {
-		margin-right: 5px;
+		margin: 0 5px;
 		height: 100%;
 		width: 25%;
 		transition: box-shadow 500ms;
