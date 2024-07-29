@@ -39,6 +39,8 @@
 						timeout: 5000
 					};
 					toastStore.trigger(toast);
+					loading = false;
+
 					// rerun all `load` functions, following the successful update
 					await invalidateAll();
 				} else if (result.type === 'failure') {
