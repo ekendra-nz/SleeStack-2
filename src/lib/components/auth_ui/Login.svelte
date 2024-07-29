@@ -10,7 +10,8 @@
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	let email: string = 'ekendra@gmail.com'; /// empty on live
+	// let email: string = 'ekendra@gmail.com'; /// empty on live
+	let email: string = '';
 	let loading: boolean = false;
 	let rego: boolean = false;
 
@@ -36,50 +37,49 @@
 			loading = false;
 			return;
 		}
+		if (strength < 4) {
+			const toast: ToastSettings = {
+				message: 'Password did not meet the requirements.',
+				background: 'variant-filled-error',
+				timeout: 5000
+			};
+			toastStore.trigger(toast);
+			loading = false;
+			return;
+		}
 
 		if (rego === true) {
 			// sign up
-			if (strength == 4) {
-				const response = await fetch('?/signup', {
-					method: 'POST',
-					body: data
-				});
-				const result: ActionResult = deserialize(await response.text());
+			const response = await fetch('?/signup', {
+				method: 'POST',
+				body: data
+			});
+			const result: ActionResult = deserialize(await response.text());
 
-				if (result.type === 'success') {
-					const toast: ToastSettings = {
-						message:
-							'Verification email sent to <strong>' +
-							email +
-							'</strong>. <br />Follow the link in your email to continue.',
-						background: 'variant-filled-success',
-						timeout: 5000
-					};
-					toastStore.trigger(toast);
-					loading = false;
-
-					// rerun all `load` functions, following the successful update
-					await invalidateAll();
-				} else if (result.type === 'failure') {
-					const toast: ToastSettings = {
-						message: result.data?.error || 'There was a problem signing you up.',
-						background: 'variant-filled-error',
-						timeout: 5000
-					};
-					toastStore.trigger(toast);
-					loading = false;
-				}
-				applyAction(result);
-			} else {
-				// if password wasn't strong enough
+			if (result.type === 'success') {
 				const toast: ToastSettings = {
-					message: 'Password did not meet the requirements.',
+					message:
+						'Verification email sent to <strong>' +
+						email +
+						'</strong>. <br />Follow the link in your email to continue.',
+					background: 'variant-filled-success',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+				loading = false;
+
+				// rerun all `load` functions, following the successful update
+				await invalidateAll();
+			} else if (result.type === 'failure') {
+				const toast: ToastSettings = {
+					message: result.data?.error || 'There was a problem signing you up.',
 					background: 'variant-filled-error',
 					timeout: 5000
 				};
 				toastStore.trigger(toast);
 				loading = false;
 			}
+			applyAction(result);
 		} else {
 			// sign in
 			const response = await fetch('?/signin', {
@@ -135,7 +135,7 @@
 		];
 
 		strength = validations.reduce((acc: any, cur: any) => acc + cur);
-		console.log('strength', strength);
+		// console.log('strength', strength);
 	}
 </script>
 
