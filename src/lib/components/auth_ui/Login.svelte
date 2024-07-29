@@ -11,7 +11,6 @@
 	const toastStore = getToastStore();
 
 	let email: string = '';
-	let pwd: string = '';
 	let loading: boolean = false;
 	let rego: boolean = false;
 
@@ -23,37 +22,47 @@
 		console.log('data', data.entries);
 		if (rego) {
 			// sign up
-			const response = await fetch('?/signup', {
-				method: 'POST',
-				body: data
-			});
+			if (strength == 4) {
+				const response = await fetch('?/signup', {
+					method: 'POST',
+					body: data
+				});
+				const result: ActionResult = deserialize(await response.text());
 
-			const result: ActionResult = deserialize(await response.text());
-
-			if (result.type === 'success') {
+				if (result.type === 'success') {
+					const toast: ToastSettings = {
+						message:
+							'Verification email sent to <strong>' +
+							email +
+							'</strong>. <br />Follow the link in your email to continue.',
+						background: 'variant-filled-success',
+						timeout: 5000
+					};
+					toastStore.trigger(toast);
+					// rerun all `load` functions, following the successful update
+					await invalidateAll();
+				} else if (result.type === 'failure') {
+					const toast: ToastSettings = {
+						message:
+							'There was a problem sending a verification email to <strong>' +
+							email +
+							'</strong>. It could be something on our end, but please double check your email address and try again.',
+						background: 'variant-filled-error',
+						timeout: 5000
+					};
+					toastStore.trigger(toast);
+				}
+				applyAction(result);
+			} else {
+				// if password wasn't strong enough
 				const toast: ToastSettings = {
-					message:
-						'Verification email sent to <strong>' +
-						email +
-						'</strong>. <br />Follow the link in your email to continue.',
-					background: 'variant-filled-success',
-					timeout: 5000
-				};
-				toastStore.trigger(toast);
-				// rerun all `load` functions, following the successful update
-				await invalidateAll();
-			} else if (result.type === 'failure') {
-				const toast: ToastSettings = {
-					message:
-						'There was a problem sending a verification email to <strong>' +
-						email +
-						'</strong>. It could be something on our end, but please double check your email address and try again.',
+					message: 'Password did not meet the requirements.',
 					background: 'variant-filled-error',
 					timeout: 5000
 				};
 				toastStore.trigger(toast);
+				loading = false;
 			}
-			applyAction(result);
 		} else {
 			// sign in
 			const response = await fetch('?/signin', {
@@ -105,12 +114,13 @@
 		];
 
 		strength = validations.reduce((acc: any, cur: any) => acc + cur);
+		console.log('strength', strength);
 	}
 </script>
 
-<form method="POST" on:submit|preventDefault={handleSubmit}>
+<form method="POST" class="text-primary-500" on:submit|preventDefault={handleSubmit}>
 	<div class="field emailfield">
-		<input type="email" name="email" class="input" placeholder=" " bind:value={email} />
+		<input type="email" name="email" class="input" required placeholder=" " bind:value={email} />
 		<label for="email" class="label">Email</label>
 	</div>
 
@@ -230,10 +240,6 @@
 </form>
 
 <style>
-	form {
-		--text-color: #38d1e2;
-		/* max-width: 500px; */
-	}
 	.valids {
 		margin-top: 1rem;
 		text-align: left;
@@ -241,13 +247,13 @@
 	.emailfield {
 		width: 100%;
 		position: relative;
-		border-bottom: 2px dashed var(--text-color);
+		border-bottom: 2px dashed;
 		margin: 1.5rem auto 3rem;
 	}
 	.pwdfield {
 		width: 100%;
 		position: relative;
-		border-bottom: 2px dashed var(--text-color);
+		border-bottom: 2px dashed;
 		margin: 2rem auto 0.5rem;
 	}
 
