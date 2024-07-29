@@ -100,6 +100,7 @@
 
 				// rerun all `load` functions, following the successful update
 				await invalidateAll();
+				goto('/user');
 			} else if (result.type === 'failure') {
 				console.log('result.data', result.data);
 				const toast: ToastSettings = {
@@ -128,7 +129,7 @@
 		const password = e.target.value;
 
 		validations = [
-			password.length > 5,
+			password.length >= 8,
 			password.search(/[A-Z]/) > -1,
 			password.search(/[0-9]/) > -1,
 			password.search(/[$&+,:;=?@#!]/) > -1
@@ -140,6 +141,13 @@
 </script>
 
 <form method="POST" class="text-primary-500" on:submit|preventDefault={handleSubmit}>
+	<p class="text-tertiary-500">
+		We strongly recommend that you use a password manager such as <a
+			href="https://bitwarden.com/"
+			target="_blank"
+			class="anchor">Bitwarden</a
+		> to generate and keep track of unique passwords.
+	</p>
 	<div class="field emailfield">
 		<input type="email" name="email" class="input" required placeholder=" " bind:value={email} />
 		<label for="email" class="label">Email</label>
@@ -188,7 +196,7 @@
 					/>
 				{/if}
 			</div>
-			<div class="ml-1 flex">must be at least 6 characters</div>
+			<div class="ml-1 flex">must be at least 8 characters</div>
 		</li>
 		<li class="flex flex-row items-center">
 			<div class="flex">
@@ -241,26 +249,28 @@
 			>Forgot your password?</a
 		>
 	</div>
-	<div class="mx-5 mt-5 flex flex-row items-center">
-		<div class="ml-10 flex-auto">
-			<button class="variant-ghost-tertiary btn btn-sm" on:mousedown={() => (rego = true)}
-				>Register</button
-			>
-		</div>
-		<div class="flex-auto">or</div>
-		<div class="mr-10 flex-auto">
-			<button
-				class="variant-filled-tertiary btn btn-sm"
-				type="submit"
-				on:click={() => (rego = false)}>Sign In</button
-			>
-		</div>
-		<div class="mr-2 flex">
-			{#if !loading}
-				<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
-			{:else}
-				<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
-			{/if}
+	<div class="mx-5 mt-5 flex flex-col items-center">
+		<div class="flex w-3/4 flex-row items-center lg:w-1/2">
+			<div class="mx-auto flex-auto">
+				<button class="variant-ghost-tertiary btn btn-sm" on:mousedown={() => (rego = true)}
+					>Register</button
+				>
+			</div>
+			<div class="mx-1 flex-auto">or</div>
+			<div class="mx-auto flex-auto">
+				<button
+					class="variant-filled-tertiary btn btn-sm"
+					type="submit"
+					on:click={() => (rego = false)}>Sign In</button
+				>
+			</div>
+			<div class="mx-2 flex">
+				{#if !loading}
+					<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
+				{:else}
+					<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
+				{/if}
+			</div>
 		</div>
 	</div>
 </form>

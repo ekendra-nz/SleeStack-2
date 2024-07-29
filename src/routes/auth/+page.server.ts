@@ -4,7 +4,7 @@ import type { Actions } from './$types';
 
 export const actions: Actions = {
 	signup: async ({ request, locals: { supabase } }) => {
-		console.log('signup');
+		// console.log('signup');
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
@@ -21,7 +21,7 @@ export const actions: Actions = {
 					error.message
 			});
 		} else {
-			console.log(data);
+			// console.log(data);
 			if (
 				data.user?.user_metadata?.email_verified === true ||
 				data.user?.user_metadata?.email_verified == 'undefined' ||

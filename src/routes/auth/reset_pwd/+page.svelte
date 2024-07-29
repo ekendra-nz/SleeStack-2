@@ -1,5 +1,10 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import Icon from '@iconify/svelte';
+	// Forms
+	import type { ActionResult } from '@sveltejs/kit';
+	import { applyAction, deserialize } from '$app/forms';
+
 	// toast
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
@@ -39,57 +44,189 @@
 			goto('/auth');
 		}
 	}
+
+	/////////////////////////////
+
+	// do all client-side validation here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	/////////////////////////////////
+	let strength = 0;
+	let validations: any = [];
+	let showPassword = false;
+
+	function validatePassword(e: any) {
+		const password = e.target.value;
+
+		validations = [
+			password.length >= 8,
+			password.search(/[A-Z]/) > -1,
+			password.search(/[0-9]/) > -1,
+			password.search(/[$&+,:;=?@#!]/) > -1
+		];
+
+		strength = validations.reduce((acc: any, cur: any) => acc + cur);
+		// console.log('strength', strength);
+	}
+	function checkMatchingPassword(e: any) {
+		const password = e.target.value;
+		if (password !== pwd) {
+			// make border red
+		}
+	}
 </script>
 
-<h1 class="h1">New password</h1>
-<form on:submit={resetPwd}>
-	<div class="mt-10 flex w-full flex-col items-center">
-		<div>
-			<p class="h3">Passwords need to contain:</p>
-			<ul role="list" class="ml-4 list-disc space-y-1 pl-5 marker:text-tertiary-400">
-				<li><span>At least 8 characters</span></li>
-				<li>At least one uppercase letter</li>
-				<li>At least one lowercase letter</li>
-				<li>At least one number</li>
-				<li>At least one special character</li>
-			</ul>
-		</div>
-		<div class="sm:3/4 mt-4 w-1/2">
-			<input
+<h2 class="h2">New password</h2>
+
+<div class="mt-20 flex items-center justify-center">
+	<div class=" flex flex-col items-center space-y-10 text-center">
+		<div class="card variant-glass-secondary mr-auto w-96 border border-primary-500 p-4 shadow-xl">
+			<form method="POST" class="text-primary-500" on:submit|preventDefault={resetPwd}>
+				<div class=" flex w-full flex-col items-center">
+					<div>
+						<p class="text-tertiary-500">
+							We strongly recommend that you use a password manager such as <a
+								href="https://bitwarden.com/"
+								target="_blank"
+								class="anchor">Bitwarden</a
+							> to generate and keep track of unique passwords.
+						</p>
+					</div>
+					<div class="sm:3/4 mt-1 w-full">
+						<div class="field pwdfield">
+							<input
+								id="password"
+								name="password"
+								type={showPassword ? 'text' : 'password'}
+								class="input"
+								placeholder=" "
+								on:input={validatePassword}
+							/>
+							<label for="password" class="label">Password</label>
+
+							<div
+								class="toggle-password"
+								on:mouseenter={() => (showPassword = true)}
+								on:mouseleave={() => (showPassword = false)}
+								role="button"
+								tabindex="0"
+							>
+								{showPassword ? '🙈' : '👁‍🗨'}
+							</div>
+						</div>
+						<!-- <input
 				name="password"
 				type="password"
 				class="input p-2 font-extrabold text-primary-400 focus:bg-secondary-400 focus:outline-none"
 				placeholder="Please type a new password ..."
 				required
 				bind:value={pwd}
-			/>
-		</div>
-		<div class="sm:3/4 mt-4 w-1/2">
-			<input
+			/> -->
+					</div>
+					<div class="sm:3/4 my-2 w-full">
+						<div class="field pwdfield">
+							<input
+								id="password2"
+								name="password2"
+								type={showPassword ? 'text' : 'password'}
+								class="input"
+								placeholder=" "
+								on:input={checkMatchingPassword}
+							/>
+							<label for="password2" class="label">Confirm password</label>
+						</div>
+						<!-- <input
 				name="password2"
 				type="password"
 				class="input p-2 font-extrabold text-primary-400 focus:bg-secondary-400 focus:outline-none"
 				placeholder="Please confirm your password ..."
 				required
 				bind:value={pwd2}
-			/>
-		</div>
-		<div class="mt-4 w-2/3 text-center">
-			<button class="variant-filled-tertiary btn" type="submit">Reset Password</button>
+			/> -->
+					</div>
+
+					<div class="strength">
+						<span class="bar bar-1 variant-ghost-primary rounded-xl" class:bar-show={strength > 0}
+						></span>
+						<span class="bar bar-2 rounded-xl" class:bar-show={strength > 1}></span>
+						<span class="bar bar-3 rounded-xl" class:bar-show={strength > 2}></span>
+						<span class="bar bar-4 rounded-xl" class:bar-show={strength > 3}></span>
+					</div>
+
+					<ul class="valids">
+						<li class="flex flex-row items-center">
+							<div class="flex">
+								{#if validations[0]}
+									<Icon icon="gg:check-o" width="1.2em" height="1.2em" class="text-success-500" />
+								{:else}
+									<Icon
+										icon="icon-park-outline:error"
+										width="1.2em"
+										height="1.2em"
+										class=" text-error-500"
+									/>
+								{/if}
+							</div>
+							<div class="ml-1 flex">must be at least 8 characters</div>
+						</li>
+						<li class="flex flex-row items-center">
+							<div class="flex">
+								{#if validations[1]}
+									<Icon icon="gg:check-o" width="1.2em" height="1.2em" class="text-success-500" />
+								{:else}
+									<Icon
+										icon="icon-park-outline:error"
+										width="1.2em"
+										height="1.2em"
+										class=" text-error-500"
+									/>
+								{/if}
+							</div>
+							<div class="ml-1 flex">must contain a capital letter</div>
+						</li>
+						<li class="flex flex-row items-center">
+							<div class="flex">
+								{#if validations[2]}
+									<Icon icon="gg:check-o" width="1.2em" height="1.2em" class="text-success-500" />
+								{:else}
+									<Icon
+										icon="icon-park-outline:error"
+										width="1.2em"
+										height="1.2em"
+										class=" text-error-500"
+									/>
+								{/if}
+							</div>
+							<div class="ml-1 flex">must contain a number</div>
+						</li>
+						<li class="flex flex-row items-center">
+							<div class="flex">
+								{#if validations[3]}
+									<Icon icon="gg:check-o" width="1.2em" height="1.2em" class="text-success-500" />
+								{:else}
+									<Icon
+										icon="icon-park-outline:error"
+										width="1.2em"
+										height="1.2em"
+										class=" text-error-500"
+									/>
+								{/if}
+							</div>
+							<div class="ml-1 flex">must contain at least one: $&+,:;=?@#!</div>
+						</li>
+					</ul>
+					<div class="mt-4 w-2/3 text-center">
+						<button class="variant-filled-tertiary btn" type="submit">Reset Password</button>
+					</div>
+				</div>
+			</form>
 		</div>
 	</div>
-</form>
+</div>
 
 <style>
 	.valids {
 		margin-top: 1rem;
 		text-align: left;
-	}
-	.emailfield {
-		width: 100%;
-		position: relative;
-		border-bottom: 2px dashed;
-		margin: 1.5rem auto 3rem;
 	}
 	.pwdfield {
 		width: 100%;
