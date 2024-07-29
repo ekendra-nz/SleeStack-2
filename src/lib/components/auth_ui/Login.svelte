@@ -10,16 +10,33 @@
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	let email: string = '';
+	let email: string = 'ekendra@gmail.com'; /// empty on live
 	let loading: boolean = false;
 	let rego: boolean = false;
+
+	function isValidEmail(email: string): boolean {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailRegex.test(email);
+	}
 
 	const handleSubmit = async (event: { currentTarget: EventTarget & HTMLFormElement }) => {
 		// UI stuff
 		loading = true;
 		// evt.preventDefault();
 		const data = new FormData(event.currentTarget);
-		console.log('rego', rego);
+		// console.log('data', data.get('email'));
+
+		if (!isValidEmail(email)) {
+			const toast: ToastSettings = {
+				message: 'Please enter a valid email address.',
+				background: 'variant-filled-error',
+				timeout: 5000
+			};
+			toastStore.trigger(toast);
+			loading = false;
+			return;
+		}
+
 		if (rego === true) {
 			// sign up
 			if (strength == 4) {
@@ -45,10 +62,7 @@
 					await invalidateAll();
 				} else if (result.type === 'failure') {
 					const toast: ToastSettings = {
-						message:
-							'There was a problem sending a verification email to <strong>' +
-							email +
-							'</strong>. It could be something on our end, but please double check your email address and try again.',
+						message: result.data?.error || 'There was a problem signing you up.',
 						background: 'variant-filled-error',
 						timeout: 5000
 					};
