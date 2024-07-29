@@ -11,7 +11,7 @@ export const actions: Actions = {
 		const { error } = await supabase.auth.signUp({ email, password });
 		if (error) {
 			console.error(error);
-			return fail(400, { password, missing: true, error: error.message });
+			return fail(400, { error: error.message });
 		} else {
 			return { success: true };
 		}
