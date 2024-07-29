@@ -19,8 +19,8 @@
 		loading = true;
 		// evt.preventDefault();
 		const data = new FormData(event.currentTarget);
-		console.log('data', data.entries);
-		if (rego) {
+		console.log('rego', rego);
+		if (rego === true) {
 			// sign up
 			if (strength == 4) {
 				const response = await fetch('?/signup', {
@@ -51,6 +51,7 @@
 						timeout: 5000
 					};
 					toastStore.trigger(toast);
+					loading = false;
 				}
 				applyAction(result);
 			} else {
@@ -79,6 +80,8 @@
 					timeout: 5000
 				};
 				toastStore.trigger(toast);
+				loading = false;
+
 				// rerun all `load` functions, following the successful update
 				await invalidateAll();
 			} else if (result.type === 'failure') {
@@ -90,6 +93,8 @@
 					timeout: 5000
 				};
 				toastStore.trigger(toast);
+				loading = false;
+
 				await invalidateAll();
 			}
 			applyAction(result);
@@ -218,16 +223,17 @@
 
 	<div class="mx-5 mt-5 flex flex-row items-center">
 		<div class="ml-10 flex-auto">
-			<button
-				class="variant-ghost-tertiary btn btn-sm"
-				type="submit"
-				formaction="?/signup"
-				on:click={() => (rego = true)}>Register</button
+			<button class="variant-ghost-tertiary btn btn-sm" on:mousedown={() => (rego = true)}
+				>Register</button
 			>
 		</div>
 		<div class="flex-auto">or</div>
 		<div class="mr-10 flex-auto">
-			<button class="variant-filled-tertiary btn btn-sm" type="submit">Sign In</button>
+			<button
+				class="variant-filled-tertiary btn btn-sm"
+				type="submit"
+				on:click={() => (rego = false)}>Sign In</button
+			>
 		</div>
 		<div class="mr-2 flex">
 			{#if !loading}
