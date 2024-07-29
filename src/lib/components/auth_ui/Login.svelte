@@ -236,7 +236,11 @@
 			<div class="ml-1 flex">must contain at least one: $&+,:;=?@#!</div>
 		</li>
 	</ul>
-
+	<div class="mt-2 flex flex-col items-end">
+		<a href="/auth/forgot_pwd" class="text-xs text-tertiary-400 hover:text-secondary-300"
+			>Forgot your password?</a
+		>
+	</div>
 	<div class="mx-5 mt-5 flex flex-row items-center">
 		<div class="ml-10 flex-auto">
 			<button class="variant-ghost-tertiary btn btn-sm" on:mousedown={() => (rego = true)}

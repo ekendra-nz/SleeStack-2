@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	// toast
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
+	import { goto, invalidateAll } from '$app/navigation';
 	const toastStore = getToastStore();
 
 	export let data: PageData;
@@ -12,9 +12,6 @@
 	let pwd: string = '';
 	let pwd2: string = '';
 
-	onMount(() => {
-		console.log('user: ', user);
-	});
 	async function resetPwd() {
 		if (pwd !== pwd2) {
 			console.error('Passwords do not match');
@@ -31,12 +28,15 @@
 			console.error(error);
 		} else {
 			const t: ToastSettings = {
-				message: 'Password reset successfully.',
+				message: 'Password reset successfully. Please log in again.',
 				hideDismiss: true,
 				background: 'variant-filled-success',
 				timeout: 5000
 			};
 			toastStore.trigger(t);
+			invalidateAll();
+			const { error } = await supabase.auth.signOut();
+			goto('/auth');
 		}
 	}
 </script>
@@ -79,3 +79,130 @@
 		</div>
 	</div>
 </form>
+
+<style>
+	.valids {
+		margin-top: 1rem;
+		text-align: left;
+	}
+	.emailfield {
+		width: 100%;
+		position: relative;
+		border-bottom: 2px dashed;
+		margin: 1.5rem auto 3rem;
+	}
+	.pwdfield {
+		width: 100%;
+		position: relative;
+		border-bottom: 2px dashed;
+		margin: 2rem auto 0.5rem;
+	}
+
+	.label {
+		color: var(--text-color);
+		font-size: 1.2rem;
+	}
+
+	.input {
+		outline: none;
+		border: none;
+		overflow: hidden;
+		margin: 0;
+		width: 100%;
+		padding: 0.25rem;
+		background: none;
+		color: white;
+		font-size: 1.2rem;
+		font-weight: bold;
+	}
+
+	.input:valid {
+		color: yellowgreen;
+	}
+
+	.input:invalid {
+		color: orangered;
+	}
+
+	/* Border animation*/
+
+	.field::after {
+		content: '';
+		position: relative;
+		display: block;
+		height: 4px;
+		width: 100%;
+		background: #d16dff;
+		transform: scaleX(0);
+		transform-origin: 0%;
+		transition: transform 500ms ease;
+		top: 2px;
+	}
+
+	.field:focus-within {
+		border-color: transparent;
+	}
+
+	.field:focus-within::after {
+		transform: scaleX(1);
+	}
+
+	/* Label animation*/
+
+	.label {
+		z-index: -1;
+		position: absolute;
+		transform: translateY(-2rem);
+		transform-origin: 0%;
+		transition: transform 400ms;
+	}
+
+	.field:focus-within .label,
+	.input:not(:placeholder-shown) + .label {
+		transform: scale(0.8) translateY(-5rem);
+	}
+
+	/* Strength Meter */
+
+	.strength {
+		display: flex;
+		height: 20px;
+		width: 100%;
+	}
+
+	.bar {
+		margin: 0 5px;
+		height: 100%;
+		width: 25%;
+		transition: box-shadow 500ms;
+		box-shadow: inset 0px 20px #1f1f1f;
+	}
+
+	.bar-show {
+		box-shadow: none;
+	}
+
+	.bar-1 {
+		background: linear-gradient(to right, red, orangered);
+	}
+
+	.bar-2 {
+		background: linear-gradient(to right, orangered, yellow);
+	}
+
+	.bar-3 {
+		background: linear-gradient(to right, yellow, yellowgreen);
+	}
+
+	.bar-4 {
+		background: linear-gradient(to right, yellowgreen, green);
+	}
+
+	.toggle-password {
+		position: absolute;
+		cursor: help;
+		font-size: 0.8rem;
+		right: 0.25rem;
+		bottom: 0.5rem;
+	}
+</style>

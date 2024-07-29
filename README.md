@@ -5,7 +5,7 @@
 
 - add cron to wipe user notes every day
 
-- validation for all email and password inputs needs to actually stop process
+- need client-side validation for   password reset inputs
 - delete account
 
 ## resources

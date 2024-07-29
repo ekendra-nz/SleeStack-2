@@ -28,7 +28,7 @@
 					timeout: 5000
 				};
 				toastStore.trigger(toast);
-				goto('/');
+				goto('/auth');
 			}
 		}
 	}
