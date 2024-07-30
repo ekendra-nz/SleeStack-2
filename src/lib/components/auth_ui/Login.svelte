@@ -61,7 +61,7 @@
 					message:
 						'Verification email sent to <strong>' +
 						email +
-						'</strong>. <br />Follow the link in your email to continue.',
+						'</strong>. <br />Follow the link in your email to continue.<br /> If you do not receive the email, please check your spam folder.',
 					background: 'variant-filled-success',
 					timeout: 5000
 				};

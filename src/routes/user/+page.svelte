@@ -2,7 +2,7 @@
 	import { invalidate } from '$app/navigation';
 	import type { EventHandler } from 'svelte/elements';
 	import type { PageData } from './$types';
-
+	import Icon from '@iconify/svelte';
 	// Toast
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
@@ -11,10 +11,14 @@
 	export let data: PageData;
 	$: ({ notes, supabase, user } = data);
 
+	let pwdLoading: boolean = false;
+	let noteLoading: boolean = false;
+
 	async function SendResetPwdEmail() {
 		let email: string | undefined = user?.email;
 
 		if (email) {
+			pwdLoading = true;
 			const { data, error } = await supabase.auth.resetPasswordForEmail(email);
 			if (error) {
 				const toast: ToastSettings = {
@@ -31,18 +35,23 @@
 				};
 				toastStore.trigger(toast);
 			}
+			pwdLoading = false;
 		}
 	}
 
 	let handleSubmit: EventHandler<SubmitEvent, HTMLFormElement>;
 	$: handleSubmit = async (evt) => {
+		noteLoading = true;
 		evt.preventDefault();
 		if (!evt.target) return;
 
 		const form = evt.target as HTMLFormElement;
 
 		const note = (new FormData(form).get('note') ?? '') as string;
-		if (!note) return;
+		if (!note) {
+			noteLoading = false;
+			return;
+		}
 
 		const { error } = await supabase.from('notes').insert({ note });
 
@@ -62,7 +71,7 @@
 			};
 			toastStore.trigger(toast);
 		}
-
+		noteLoading = false;
 		invalidate('supabase:db:notes');
 		form.reset();
 	};
@@ -71,10 +80,17 @@
 <h1 class="h1">User page for: {user?.email}</h1>
 
 <div class="mt-8 flex flex-col items-center">
-	<div class="flex-1">
-		<button class="variant-filled-tertiary btn btn-sm" on:click={SendResetPwdEmail}
+	<div class="flex flex-1 items-center">
+		<button class="variant-filled-tertiary btn btn-sm mx-3 flex" on:click={SendResetPwdEmail}
 			>Send me a "reset password" email</button
 		>
+		<div class="flex flex-1">
+			{#if !pwdLoading}
+				<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
+			{:else}
+				<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
+			{/if}
+		</div>
 	</div>
 </div>
 <div
@@ -99,7 +115,13 @@
 			</div>
 
 			<div class="ml-2 flex items-center justify-center">
-				<button type="submit" class="variant-filled-tertiary rounded px-4 py-2"> Add Note </button>
+				{#if noteLoading}
+					<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
+				{:else}
+					<button type="submit" class="variant-filled-tertiary rounded px-4 py-2">
+						Add Note
+					</button>
+				{/if}
 			</div>
 		</div>
 	</form>
