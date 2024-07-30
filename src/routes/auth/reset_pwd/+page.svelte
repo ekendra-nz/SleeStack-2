@@ -17,20 +17,56 @@
 	let pwd: string = '';
 	let pwd2: string = '';
 
+	let strength = 0;
+	let validations: any = [];
+	let passwordMatch: boolean = false;
+	let showPassword: boolean = false;
+	let loading: boolean = false;
+
 	async function resetPwd() {
-		if (pwd !== pwd2) {
+		loading = true;
+		// console.log('pwd', pwd);
+		// console.log('pwd2', pwd2);
+		// console.log('strength', strength);
+		// console.log('passwordMatch', passwordMatch);
+
+		if (!passwordMatch) {
 			console.error('Passwords do not match');
 			const t: ToastSettings = {
 				message: 'Your passwords do not match.',
 				background: 'variant-filled-error',
-				timeout: 10000
+				timeout: 2000
 			};
 			toastStore.trigger(t);
+			loading = false;
 			return;
 		}
+
+		if (strength < 4) {
+			console.error('Your password did not meet the requirements.');
+			const t: ToastSettings = {
+				message: 'Your password did not meet the requirements.',
+				background: 'variant-filled-error',
+				timeout: 5000
+			};
+			toastStore.trigger(t);
+			loading = false;
+
+			return;
+		}
+
 		const { error } = await supabase.auth.updateUser({ password: pwd });
 		if (error) {
 			console.error(error);
+			const t: ToastSettings = {
+				message: 'There was a problem resetting your password: ' + error.message,
+				background: 'variant-filled-error',
+				timeout: 10000
+			};
+			toastStore.trigger(t);
+			loading = false;
+
+			return;
 		} else {
 			const t: ToastSettings = {
 				message: 'Password reset successfully. Please log in again.',
@@ -39,39 +75,38 @@
 				timeout: 5000
 			};
 			toastStore.trigger(t);
+			loading = false;
+
 			invalidateAll();
 			const { error } = await supabase.auth.signOut();
 			goto('/auth');
 		}
+		loading = false;
 	}
 
-	/////////////////////////////
-
-	// do all client-side validation here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	/////////////////////////////////
-	let strength = 0;
-	let validations: any = [];
-	let showPassword = false;
+	function checkMatchingPassword(e: any) {
+		pwd2 = e.target.value;
+		if (pwd2 == pwd) {
+			// make border green
+			passwordMatch = true;
+		} else {
+			// make border red
+			passwordMatch = false;
+		}
+	}
 
 	function validatePassword(e: any) {
-		const password = e.target.value;
+		pwd = e.target.value;
 
 		validations = [
-			password.length >= 8,
-			password.search(/[A-Z]/) > -1,
-			password.search(/[0-9]/) > -1,
-			password.search(/[$&+,:;=?@#!]/) > -1
+			pwd.length >= 8,
+			pwd.search(/[A-Z]/) > -1,
+			pwd.search(/[0-9]/) > -1,
+			pwd.search(/[$&+,:;=?@#!]/) > -1
 		];
 
 		strength = validations.reduce((acc: any, cur: any) => acc + cur);
 		// console.log('strength', strength);
-	}
-	function checkMatchingPassword(e: any) {
-		const password = e.target.value;
-		if (password !== pwd) {
-			// make border red
-		}
 	}
 </script>
 
@@ -108,19 +143,18 @@
 								on:mouseenter={() => (showPassword = true)}
 								on:mouseleave={() => (showPassword = false)}
 								role="button"
-								tabindex="0"
+								tabindex="-1"
 							>
 								{showPassword ? '🙈' : '👁‍🗨'}
 							</div>
 						</div>
-						<!-- <input
-				name="password"
-				type="password"
-				class="input p-2 font-extrabold text-primary-400 focus:bg-secondary-400 focus:outline-none"
-				placeholder="Please type a new password ..."
-				required
-				bind:value={pwd}
-			/> -->
+						<div class="strength">
+							<span class="bar bar-1 variant-ghost-primary rounded-xl" class:bar-show={strength > 0}
+							></span>
+							<span class="bar bar-2 rounded-xl" class:bar-show={strength > 1}></span>
+							<span class="bar bar-3 rounded-xl" class:bar-show={strength > 2}></span>
+							<span class="bar bar-4 rounded-xl" class:bar-show={strength > 3}></span>
+						</div>
 					</div>
 					<div class="sm:3/4 my-2 w-full">
 						<div class="field pwdfield">
@@ -134,22 +168,6 @@
 							/>
 							<label for="password2" class="label">Confirm password</label>
 						</div>
-						<!-- <input
-				name="password2"
-				type="password"
-				class="input p-2 font-extrabold text-primary-400 focus:bg-secondary-400 focus:outline-none"
-				placeholder="Please confirm your password ..."
-				required
-				bind:value={pwd2}
-			/> -->
-					</div>
-
-					<div class="strength">
-						<span class="bar bar-1 variant-ghost-primary rounded-xl" class:bar-show={strength > 0}
-						></span>
-						<span class="bar bar-2 rounded-xl" class:bar-show={strength > 1}></span>
-						<span class="bar bar-3 rounded-xl" class:bar-show={strength > 2}></span>
-						<span class="bar bar-4 rounded-xl" class:bar-show={strength > 3}></span>
 					</div>
 
 					<ul class="valids">
@@ -214,8 +232,27 @@
 							<div class="ml-1 flex">must contain at least one: $&+,:;=?@#!</div>
 						</li>
 					</ul>
-					<div class="mt-4 w-2/3 text-center">
-						<button class="variant-filled-tertiary btn" type="submit">Reset Password</button>
+					<div class=" mt-2 flex flex-row items-center">
+						<div class=" mx-2 flex text-center">
+							<button class="variant-filled-tertiary btn" type="submit">Reset Password</button>
+						</div>
+						<div class="flex flex-col items-center">
+							{#if !loading}
+								<Icon
+									icon="ic:baseline-lock"
+									width="1.2em"
+									height="1.2em"
+									class="text-tertiary-500"
+								/>
+							{:else}
+								<Icon
+									icon="line-md:loading-loop"
+									width="2em"
+									height="2em"
+									class="text-tertiary-500"
+								/>
+							{/if}
+						</div>
 					</div>
 				</div>
 			</form>
@@ -236,7 +273,7 @@
 	}
 
 	.label {
-		color: var(--text-color);
+		/* color: var(--text-color); */
 		font-size: 1.2rem;
 	}
 
@@ -303,7 +340,7 @@
 
 	.strength {
 		display: flex;
-		height: 20px;
+		height: 19px;
 		width: 100%;
 	}
 

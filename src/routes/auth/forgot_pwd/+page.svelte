@@ -57,23 +57,30 @@
 	}
 </script>
 
-<form on:submit={SendResetPwdEmail}>
-	<div class="mt-20 flex w-full flex-col items-center">
-		<div class="w-2/3">
-			<input
-				name="email"
-				type="email"
-				class="input p-2 font-extrabold text-primary-400 focus:bg-secondary-400 focus:outline-none"
-				placeholder="Please type the email address to send the reset link ...."
-				bind:value={email}
-			/>
-		</div>
-		<div class="mt-4 w-2/3 text-center">
-			{#if loading}
-				<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
-			{:else}
-				<button class="variant-filled-tertiary btn" type="submit">Send reset password email</button>
-			{/if}
-		</div>
+<div class="mt-10 flex items-center justify-center">
+	<div class="flex w-full flex-col items-center space-y-10 text-center lg:w-1/3">
+		<form on:submit={SendResetPwdEmail} class="w-full">
+			<div class="w-full">
+				<input
+					name="email"
+					type="email"
+					required
+					class="input w-full p-2 font-extrabold text-primary-400 focus:bg-secondary-400 focus:outline-none"
+					placeholder="Your email  to send the reset link ...."
+					bind:value={email}
+				/>
+			</div>
+			<div class="mt-4 flex flex-col">
+				{#if loading}
+					<div class="flex flex-1 justify-center">
+						<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
+					</div>
+				{:else}
+					<button class="variant-filled-tertiary btn" type="submit"
+						>Send reset password email</button
+					>
+				{/if}
+			</div>
+		</form>
 	</div>
-</form>
+</div>
