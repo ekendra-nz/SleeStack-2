@@ -91,12 +91,6 @@
 				<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
 			{/if}
 		</div>
-		<div class="flex">
-			<a href="/auth/delete"
-				><button class="variant-filled-tertiary btn btn-sm mx-3 flex">Delete this account</button
-				></a
-			>
-		</div>
 	</div>
 </div>
 <div
@@ -133,10 +127,11 @@
 	</form>
 </div>
 
-<div class="grid grid-cols-3">
-	<div class="bg-filled-surface"></div>
-	<div class="rounded-lg border border-secondary-600 bg-primary-500 px-16 py-2 text-secondary-500">
-		<h2 class="h2 mb-2 text-center underline">Notes</h2>
+<div
+	class="first-letter: flex rounded-lg border border-secondary-600 bg-primary-500 p-4 text-secondary-500"
+>
+	<div class=" px-16 py-2">
+		<h2 class="h2 mb-2 text-left underline">Notes</h2>
 
 		<ul class=" list-disc">
 			{#each notes as note}
@@ -144,5 +139,12 @@
 			{/each}
 		</ul>
 	</div>
-	<div class="bg-filled-surface"></div>
+</div>
+
+<div class="flex flex-col items-center">
+	<div class="flex">
+		<a href="/auth/delete">
+			<button class="variant-filled-tertiary btn btn-sm mx-3 flex">Delete this account</button>
+		</a>
+	</div>
 </div>

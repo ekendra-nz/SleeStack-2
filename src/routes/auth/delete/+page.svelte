@@ -16,7 +16,7 @@
 	const deleteUser = async (event: { currentTarget: EventTarget & HTMLFormElement }) => {
 		loading = true;
 
-		if (confirm !== phrase) {
+		if (confirm.trim() !== phrase) {
 			const toast: ToastSettings = {
 				message: 'You need to type exactly "' + phrase + '" in all caps to delete your account.',
 				background: 'variant-filled-error',

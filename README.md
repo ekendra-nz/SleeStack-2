@@ -3,8 +3,11 @@
 ## To-do 
 - add cron to wipe user notes every day
  
-- make profiles table
-- sign up confirm goes to 404
+- make profiles table 
+
+RESPONSIVE
+- user page
+menu and side drawer fiasco
 
 ## resources
 

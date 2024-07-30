@@ -6,23 +6,14 @@
 	export let data;
 	$: ({ session } = data);
 
-	// this is to hopefully use the user's first name on the button rather than their email
-	// let uName = session?.user?.email;
-	// import { derivedUserName } from '$lib/stores';
-	// derivedUserName.subscribe((value: string) => {
-	// 	derivedUserName.set(session?.user?.email);
-	// 	uName = value;
-	// });
-
 	const drawerStore = getDrawerStore();
 	const drawerSettings: DrawerSettings = {
 		id: 'sidebar_menu',
 		// Provide your property overrides:
 		position: 'right',
-		// bgDrawer: 'bg-primary-900',
 		bgBackdrop: 'bg-gradient-to-r from-secondary-300  ',
-		width: 'w-1/5',
-		padding: 'p-4',
+		width: 'md:1/5',
+		padding: 'p-1',
 		rounded: 'rounded-xl'
 	};
 
@@ -81,11 +72,12 @@
 							Contact
 						</a>
 					</li>
-					<li class="py-2 lg:py-0">
+					<li class="py-1 lg:py-0">
 						{#if session?.user}
-							<button class="variant-ghost-primary btn" on:click={drawerOpen}
+							<!-- <button class="variant-ghost-primary btn" on:click={drawerOpen}
 								>{session?.user?.email}</button
-							>
+							> -->
+							<button class="variant-ghost-primary btn" on:click={drawerOpen}>Your Account</button>
 						{:else}
 							<a href="/auth"><button class="variant-ghost-primary btn">Sign In/Up</button></a>
 						{/if}

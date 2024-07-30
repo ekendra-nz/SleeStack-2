@@ -9,6 +9,7 @@
 
 	export let data;
 	$: ({ supabase } = data);
+	$: ({ session } = data);
 
 	$: signOut = async () => {
 		const { error } = await supabase.auth.signOut();
@@ -43,6 +44,9 @@
 <aside class="w-full">
 	<nav>
 		<ul>
+			<li class="block bg-secondary-700 px-3 py-2">
+				<p>Details for: {session?.user?.email}</p>
+			</li>
 			<li>
 				<a href="/user" class="block px-3 py-2 hover:bg-secondary-700" on:click={drawerClose}
 					>Account Details</a
