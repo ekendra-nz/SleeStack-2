@@ -4,6 +4,7 @@
 - add cron to wipe user notes every day
  
 - make profiles table
+- sign up confirm goes to 404
 
 ## resources
 
