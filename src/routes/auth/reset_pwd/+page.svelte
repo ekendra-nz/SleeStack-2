@@ -112,10 +112,12 @@
 
 <h2 class="h2">New password</h2>
 
-<div class="mt-20 flex items-center justify-center">
-	<div class=" flex flex-col items-center space-y-10 text-center">
-		<div class="card variant-glass-secondary mr-auto w-96 border border-primary-500 p-4 shadow-xl">
-			<form method="POST" class="text-primary-500" on:submit|preventDefault={resetPwd}>
+<div class="mt-10 flex items-center justify-center">
+	<div class=" flex flex-col items-center justify-center space-y-10 text-center">
+		<div
+			class="card variant-glass-secondary mr-auto w-full items-center justify-center border border-primary-500 p-4 shadow-xl lg:w-96"
+		>
+			<form method="POST" class=" text-primary-500" on:submit|preventDefault={resetPwd}>
 				<div class=" flex w-full flex-col items-center">
 					<div>
 						<p class="text-tertiary-500">
