@@ -10,7 +10,7 @@
 	const toastStore = getToastStore();
 
 	const phrase: string = 'DELETE THIS ACCOUNT';
-	let confirm: string = 'DELETE THIS ACCOUNT';
+	let confirm: string = '';
 	let loading: boolean = false;
 
 	const deleteUser = async (event: { currentTarget: EventTarget & HTMLFormElement }) => {
