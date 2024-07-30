@@ -6,10 +6,18 @@ import type { Actions } from './$types';
 
 export const actions: Actions = {
 	deleteUser: async ({ locals: { supabase } }) => {
-		// deleteUser: async () => {
-		console.log('delete user from server');
+		//
+		// console.log('delete user from server');
 		const user_id: string | undefined = await getUserID({ locals: { supabase } });
 
+		const { error } = await supabase.auth.signOut();
+
+		if (error) {
+			return fail(400, {
+				errorType: 'fail',
+				error: 'There was a problem deleting your account: <br />'
+			});
+		}
 		const adminSupabase = createClient(PUBLIC_SUPABASE_URL, PRIVATE_SUPABASE_SERVICE_ROLE);
 
 		if (user_id === undefined) {
@@ -32,9 +40,7 @@ export const actions: Actions = {
 	}
 };
 
-import { SupabaseClient } from '@supabase/supabase-js';
-
-const getUserID = async ({ locals: { supabase } }: { locals: { supabase: SupabaseClient } }) => {
+const getUserID = async ({ locals: { supabase } }: { locals: { supabase: any } }) => {
 	const { data } = await supabase.auth.getUser();
 
 	return data.user?.id;
