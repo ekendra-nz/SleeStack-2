@@ -91,6 +91,12 @@
 				<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
 			{/if}
 		</div>
+		<div class="flex">
+			<a href="/auth/delete"
+				><button class="variant-filled-tertiary btn btn-sm mx-3 flex">Delete this account</button
+				></a
+			>
+		</div>
 	</div>
 </div>
 <div

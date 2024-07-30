@@ -1,10 +1,10 @@
 # create-svelte
 
-## To-do
-- fix responsive problems on auth
+## To-do 
 - add cron to wipe user notes every day
 
 - delete account
+- make profiles table
 
 ## resources
 
