@@ -1,4 +1,7 @@
+import { PRIVATE_SUPABASE_SERVICE_ROLE } from '$env/static/private';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { json } from '@sveltejs/kit';
+
 import { createClient } from '@supabase/supabase-js';
 import { add } from 'date-fns';
 import { UTCDate } from '@date-fns/utc';
@@ -83,7 +86,6 @@ export async function POST({ request }) {
 }
 
 const logThisCronAttempt = async (allowed: boolean, now: Date) => {
-	// eslint-disable-line
 	try {
 		let updateData;
 		if (allowed) {
