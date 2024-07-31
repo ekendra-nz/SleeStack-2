@@ -90,6 +90,9 @@ importers:
       svelte-check:
         specifier: ^3.6.0
         version: 3.8.4(postcss-load-config@4.0.2(postcss@8.4.39))(postcss@8.4.39)(svelte@4.2.18)
+      svelte-turnstile:
+        specifier: ^0.7.1
+        version: 0.7.1(svelte@4.2.18)
       tailwindcss:
         specifier: ^3.4.4
         version: 3.4.6
@@ -1740,6 +1743,11 @@ packages:
       typescript:
         optional: true
 
+  svelte-turnstile@0.7.1:
+    resolution: {integrity: sha512-eeXcofXCMgvBXC2t8394c/cncsZYUDq7q73c+gScO512rPhSkztEXTeeKRAMgINaTcAWO70NO5EUeVfNvRMHSA==}
+    peerDependencies:
+      svelte: ^3.58.0 || ^4.0.0
+
   svelte@4.2.18:
     resolution: {integrity: sha512-d0FdzYIiAePqRJEb90WlJDkjUEx42xhivxN8muUBmfZnP+tzUgz12DJ2hRJi8sIHCME7jeK1PTMgKPSfTd8JrA==}
     engines: {node: '>=16'}
@@ -1795,6 +1803,9 @@ packages:
 
   tslib@2.6.3:
     resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
+
+  turnstile-types@1.2.1:
+    resolution: {integrity: sha512-PZFcUDFvPvmmwb885JA/N+8Pg5xNWw/UGMABRb/vI9P8cZ4pLDCpBDzgw7oKQ67DYvboTxNhfTAu93gjX4uNbQ==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -3490,6 +3501,11 @@ snapshots:
       postcss-load-config: 4.0.2(postcss@8.4.39)
       typescript: 5.5.3
 
+  svelte-turnstile@0.7.1(svelte@4.2.18):
+    dependencies:
+      svelte: 4.2.18
+      turnstile-types: 1.2.1
+
   svelte@4.2.18:
     dependencies:
       '@ampproject/remapping': 2.3.0
@@ -3570,6 +3586,8 @@ snapshots:
   ts-interface-checker@0.1.13: {}
 
   tslib@2.6.3: {}
+
+  turnstile-types@1.2.1: {}
 
   type-check@0.4.0:
     dependencies:

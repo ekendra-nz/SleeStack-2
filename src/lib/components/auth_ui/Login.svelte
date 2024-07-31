@@ -4,13 +4,22 @@
 	import type { ActionResult } from '@sveltejs/kit';
 	import { applyAction, deserialize } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import { Turnstile } from 'svelte-turnstile';
+	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
 
+	// ----------------------------------------------------------------------------------------------------
+
+	// to toggle on and off Captch for testing purposes (otherwise it won't accept localhost)
+	// Must also turn it off here:
+	// https://supabase.com/dashboard/project/mhcgkcjyoqigqhvzvzfw/settings/auth
+	const captchaEnabled: boolean = true;
+
+	// ----------------------------------------------------------------------------------------------------
 	// Toast
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
 	const toastStore = getToastStore();
 
-	// let email: string = 'ekendra@gmail.com'; /// empty on live
 	let email: string = '';
 	let loading: boolean = false;
 	let rego: boolean = false;
@@ -267,6 +276,11 @@
 			</div>
 		</div>
 	</div>
+	{#if captchaEnabled}
+		<div class="mt-3">
+			<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} />
+		</div>
+	{/if}
 </form>
 
 <style>
