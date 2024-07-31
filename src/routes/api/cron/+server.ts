@@ -12,13 +12,13 @@ import { toZonedTime } from 'date-fns-tz';
 export async function POST({ request }) {
 	//
 	//
-	// initiated from https://console.cron-job.org/jobs/4899603/history
+	// initiated from https://console.cron-job.org/jobs/5267739/history
 	// deets in BitWarden
 
 	// or Raspberry Pi
 	// with this cron every 5 minutes
 	//
-	// */5 * * * * curl -H "Content-Type: application/json" -d '{"code":"specialSecretCode-108@*$&($#&(*))!!!"}' https://trackorama.aroha.space/api/cron
+	// */5 * * * * curl -H "Content-Type: application/json" -d '{"code":"specialSecretCode-108@*$&($#&(*))!!!"}' https://sleestack.aroha.space/api/cron
 
 	//
 	// ----------------------- override cron permission with this boolean ---------------------

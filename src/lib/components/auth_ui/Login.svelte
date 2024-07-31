@@ -95,10 +95,8 @@
 				toastStore.trigger(toast);
 				loading = false;
 
-				// await tick();
-				await goto('/user');
-
-				// setTimeout(() => goto('/user'), 0); //
+				// await goto('/user');
+				setTimeout(() => goto('/user'), 100); //
 			} else if (result.type === 'failure') {
 				console.log('result.data', result.data);
 				const toast: ToastSettings = {
