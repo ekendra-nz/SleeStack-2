@@ -49,24 +49,37 @@ export const actions: Actions = {
 			const captchaToken = formData.get('cf-turnstile-response') as string;
 			console.log('captchaToken:', captchaToken);
 
-			const { success, errors } = await validateToken(captchaToken, PRIVATE_TURNSTILE_SECRET_KEY);
-
-			if (errors) {
-				return fail(400, { captchaToken, error: 'Failed CAPTCHA' });
+			const { error } = await supabase.auth.signInWithPassword({
+				email,
+				password,
+				options: { captchaToken }
+			});
+			if (error) {
+				console.error(error);
+				return fail(400, { email, error: error.message });
 			} else {
-				console.log('CAPTCHA success', success);
-				const { error } = await supabase.auth.signInWithPassword({
-					email,
-					password,
-					options: { captchaToken }
-				});
-				if (error) {
-					console.error(error);
-					return fail(400, { email, error: error.message });
-				} else {
-					return { success: true };
-				}
+				return { success: true };
 			}
+
+			// const { success, errors } = await validateToken(captchaToken, PRIVATE_TURNSTILE_SECRET_KEY);
+
+			// if (errors) {
+			// 	return fail(400, { captchaToken, error: 'Failed CAPTCHA' });
+			// } else {
+			// 	console.log('CAPTCHA success', success);
+			// 	// log in with captcha option
+			// 	const { error } = await supabase.auth.signInWithPassword({
+			// 		email,
+			// 		password,
+			// 		options: { captchaToken }
+			// 	});
+			// 	if (error) {
+			// 		console.error(error);
+			// 		return fail(400, { email, error: error.message });
+			// 	} else {
+			// 		return { success: true };
+			// 	}
+			// }
 		} else {
 			// log in without Captcha
 			const { error } = await supabase.auth.signInWithPassword({
