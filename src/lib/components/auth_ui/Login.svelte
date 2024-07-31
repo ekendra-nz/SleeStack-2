@@ -8,7 +8,7 @@
 	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
 
 	// ----------------------------------------------------------------------------------------------------
-
+	//
 	// to toggle on and off Captch for testing purposes (otherwise it won't accept localhost)
 	// Must also turn it off here:
 	// https://supabase.com/dashboard/project/mhcgkcjyoqigqhvzvzfw/settings/auth
