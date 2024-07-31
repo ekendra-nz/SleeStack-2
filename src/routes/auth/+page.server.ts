@@ -2,7 +2,6 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { PRIVATE_TURNSTILE_SECRET_KEY } from '$env/static/private';
-import { errors } from '@playwright/test';
 
 export const actions: Actions = {
 	signup: async ({ request, locals: { supabase } }) => {
@@ -42,23 +41,44 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
-		const token = formData.get('cf-turnstile-response');
-		console.log('token:', token);
-		const SECRET_KEY = PRIVATE_TURNSTILE_SECRET_KEY;
+		const captchaEnabled = formData.get('captchaEnabled');
 
-		const { success, errors } = await validateToken(token, SECRET_KEY);
+		// console.log('captchaEnabled:', captchaEnabled);
 
-		if (errors) {
-			return fail(400, { token, error: 'Failed CAPTCHA' });
+		if (captchaEnabled === 'true') {
+			const captchaToken = formData.get('cf-turnstile-response') as string;
+			console.log('captchaToken:', captchaToken);
+
+			const { success, errors } = await validateToken(captchaToken, PRIVATE_TURNSTILE_SECRET_KEY);
+
+			if (errors) {
+				return fail(400, { captchaToken, error: 'Failed CAPTCHA' });
+			} else {
+				console.log('CAPTCHA success', success);
+				const { error } = await supabase.auth.signInWithPassword({
+					email,
+					password,
+					options: { captchaToken }
+				});
+				if (error) {
+					console.error(error);
+					return fail(400, { email, error: error.message });
+				} else {
+					return { success: true };
+				}
+			}
 		} else {
-			console.log('CAPTCHA success', success);
-		}
-		const { error } = await supabase.auth.signInWithPassword({ email, password });
-		if (error) {
-			console.error(error);
-			return fail(400, { email, error: error.message });
-		} else {
-			return { success: true };
+			// log in without Captcha
+			const { error } = await supabase.auth.signInWithPassword({
+				email,
+				password
+			});
+			if (error) {
+				console.error(error);
+				return fail(400, { email, error: error.message });
+			} else {
+				return { success: true };
+			}
 		}
 	}
 };

@@ -12,7 +12,7 @@
 	// to toggle on and off Captch for testing purposes (otherwise it won't accept localhost)
 	// Must also turn it off here:
 	// https://supabase.com/dashboard/project/mhcgkcjyoqigqhvzvzfw/settings/auth
-	const captchaEnabled: boolean = true;
+	const captchaEnabled: boolean = false;
 
 	// ----------------------------------------------------------------------------------------------------
 	// Toast
@@ -104,8 +104,9 @@
 				toastStore.trigger(toast);
 				loading = false;
 
+				goto('/user');
 				// await goto('/user');
-				setTimeout(() => goto('/user'), 100); //
+				// setTimeout(() => goto('/user'), 100); //
 			} else if (result.type === 'failure') {
 				console.log('result.data', result.data);
 				const toast: ToastSettings = {
@@ -144,6 +145,7 @@
 </script>
 
 <form method="POST" class="text-primary-500" on:submit|preventDefault={handleSubmit}>
+	<input type="hidden" name="captchaEnabled" value={captchaEnabled} />
 	<p class="text-tertiary-500">
 		We strongly recommend that you use a password manager such as <a
 			href="https://bitwarden.com/"
@@ -254,8 +256,8 @@
 	</div>
 	{#if captchaEnabled}
 		<div class="mt-3">
-			<!-- <Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} /> -->
-			<Turnstile siteKey="0x4AAAAAAAgL1PLE_9BkTBTp" />
+			<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} />
+			<!-- <Turnstile siteKey="0x4AAAAAAAgL1PLE_9BkTBTp" /> -->
 		</div>
 	{/if}
 	<div class="mx-5 mt-5 flex flex-col items-center">
