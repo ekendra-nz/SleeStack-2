@@ -83,6 +83,7 @@ export async function POST({ request }) {
 }
 
 const logThisCronAttempt = async (allowed: boolean, now: Date) => {
+	// eslint-disable-line
 	try {
 		let updateData;
 		if (allowed) {
