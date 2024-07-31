@@ -69,41 +69,57 @@
 </script>
 
 <div class="mt-8 flex flex-col items-center">
-	<form method="POST" class="text-primary-500" on:submit|preventDefault={deleteUser}>
-		<div class="rounded-md bg-tertiary-500 p-2 text-center text-white">
-			<p>Are you sure you want to delete your account?</p>
-			<p>
-				If so, type "<span class="font-semibold text-black">{phrase}</span>" in all caps below.
-			</p>
-		</div>
-		<input
-			type="text"
-			name="confirm"
-			id="confirm"
-			class="input my-3 p-2 font-semibold text-black"
-			bind:value={confirm}
-		/>
-		<div class=" flex flex-col items-center">
-			<div class="flex flex-row items-center">
-				<div class="mx-auto flex-auto">
-					<a href="/user">
-						<div class="variant-filled-tertiary btn btn-sm flex">Nah. I changed my mind.</div>
-					</a>
-				</div>
-				<div class="mx-2 flex-auto">or</div>
-				<div class="mx-auto flex-auto">
-					<button class="variant-filled-tertiary btn btn-sm flex" type="submit">
-						Delete My Account</button
-					>
-				</div>
-				<div class="mx-2 flex">
-					{#if !loading}
-						<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
-					{:else}
-						<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
-					{/if}
+	<div class="rounded-md bg-tertiary-500 p-2 text-center text-white">
+		<p>Are you sure you want to delete your account?</p>
+		<p>
+			If so, type "<span class="font-semibold text-black">{phrase}</span>" in all caps below.
+		</p>
+	</div>
+	<div class="flex w-full flex-col items-center">
+		<form
+			method="POST"
+			class="w-full text-primary-500 lg:w-1/3"
+			on:submit|preventDefault={deleteUser}
+		>
+			<input
+				type="text"
+				name="confirm"
+				id="confirm"
+				class="input my-3 p-2 font-semibold text-black"
+				bind:value={confirm}
+			/>
+			<div class=" flex flex-col items-center">
+				<div class="flex flex-row items-center">
+					<div class="mx-auto flex-auto">
+						<a href="/user">
+							<div class="variant-filled-tertiary btn btn-sm flex">No</div>
+						</a>
+					</div>
+					<div class="mx-2 flex-auto">or</div>
+					<div class="mx-auto flex-auto">
+						<button class="variant-filled-tertiary btn btn-sm flex" type="submit">
+							Delete My Account</button
+						>
+					</div>
+					<div class="mx-2 flex">
+						{#if !loading}
+							<Icon
+								icon="ic:baseline-lock"
+								width="1.2em"
+								height="1.2em"
+								class="text-tertiary-500"
+							/>
+						{:else}
+							<Icon
+								icon="line-md:loading-loop"
+								width="2em"
+								height="2em"
+								class="text-tertiary-500"
+							/>
+						{/if}
+					</div>
 				</div>
 			</div>
-		</div>
-	</form>
+		</form>
+	</div>
 </div>

@@ -3,7 +3,7 @@
 	// Forms
 	import type { ActionResult } from '@sveltejs/kit';
 	import { applyAction, deserialize } from '$app/forms';
-	import { invalidateAll, goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 
 	// Toast
 	import { getToastStore } from '@skeletonlabs/skeleton';
@@ -67,9 +67,6 @@
 				};
 				toastStore.trigger(toast);
 				loading = false;
-
-				// rerun all `load` functions, following the successful update
-				await invalidateAll();
 			} else if (result.type === 'failure') {
 				const toast: ToastSettings = {
 					message: result.data?.error || 'There was a problem signing you up.',
@@ -98,9 +95,10 @@
 				toastStore.trigger(toast);
 				loading = false;
 
-				// rerun all `load` functions, following the successful update
-				await invalidateAll();
-				goto('/user');
+				// await tick();
+				await goto('/user');
+
+				// setTimeout(() => goto('/user'), 0); //
 			} else if (result.type === 'failure') {
 				console.log('result.data', result.data);
 				const toast: ToastSettings = {
@@ -111,8 +109,6 @@
 				};
 				toastStore.trigger(toast);
 				loading = false;
-
-				await invalidateAll();
 			}
 			applyAction(result);
 			loading = false;

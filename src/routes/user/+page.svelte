@@ -3,44 +3,85 @@
 	import type { EventHandler } from 'svelte/elements';
 	import type { PageData } from './$types';
 	import Icon from '@iconify/svelte';
+	import { onMount } from 'svelte';
+
 	// Toast
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
+
 	const toastStore = getToastStore();
 
 	export let data: PageData;
-	$: ({ notes, supabase, user } = data);
+	$: ({ notes, profile, supabase, user } = data);
 
 	let pwdLoading: boolean = false;
 	let noteLoading: boolean = false;
+	let userDetailsLoading: boolean = false;
+	let first_name: any = '';
+	let last_name: string = '';
 
-	async function SendResetPwdEmail() {
-		let email: string | undefined = user?.email;
+	onMount(() => {
+		first_name = profile?.first_name;
+		last_name = profile?.last_name;
+	});
 
-		if (email) {
-			pwdLoading = true;
-			const { data, error } = await supabase.auth.resetPasswordForEmail(email);
-			if (error) {
+	$: handleUserDetailsSubmit = async () => {
+		userDetailsLoading = true;
+
+		if (!first_name) {
+			userDetailsLoading = false;
+			return;
+		}
+		if (!last_name) {
+			userDetailsLoading = false;
+			return;
+		}
+
+		const { data, error } = await supabase
+			.from('profiles')
+			.update({ first_name: first_name, last_name: last_name })
+			.eq('user_id', user?.id)
+			.select();
+		// const { data, error } = await supabase
+		// 	.from('profiles')
+		// 	.insert([
+		// 		{ user_id: user?.id, email: user?.email, first_name: first_name, last_name: last_name }
+		// 	])
+		// 	.select();
+
+		if (error) {
+			console.error(error);
+			const toast: ToastSettings = {
+				message: error.message,
+				background: 'variant-filled-error',
+				timeout: 5000
+			};
+			toastStore.trigger(toast);
+		} else {
+			// console.log('data', data);
+			if (data.length === 0) {
 				const toast: ToastSettings = {
-					message: error.message,
+					message: 'There was an error updating your details.',
 					background: 'variant-filled-error',
-					timeout: 5000
+					timeout: 2000
 				};
 				toastStore.trigger(toast);
 			} else {
 				const toast: ToastSettings = {
-					message: 'Reset password email sent',
+					message: 'User details updated successfully!',
 					background: 'variant-filled-success',
-					timeout: 5000
+					timeout: 2000
 				};
 				toastStore.trigger(toast);
 			}
-			pwdLoading = false;
 		}
-	}
+		userDetailsLoading = false;
+		invalidate('supabase:db:profiles');
+		// form.reset();
+	};
 
-	let handleSubmit: EventHandler<SubmitEvent, HTMLFormElement>;
-	$: handleSubmit = async (evt) => {
+	let handleNotesSubmit: EventHandler<SubmitEvent, HTMLFormElement>;
+	$: handleNotesSubmit = async (evt) => {
 		noteLoading = true;
 		evt.preventDefault();
 		if (!evt.target) return;
@@ -75,24 +116,65 @@
 		invalidate('supabase:db:notes');
 		form.reset();
 	};
+
+	async function SendResetPwdEmail() {
+		let email: string | undefined = user?.email;
+
+		if (email) {
+			pwdLoading = true;
+			const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+			if (error) {
+				const toast: ToastSettings = {
+					message: error.message,
+					background: 'variant-filled-error',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+			} else {
+				const toast: ToastSettings = {
+					message: 'Reset password email sent',
+					background: 'variant-filled-success',
+					timeout: 5000
+				};
+				toastStore.trigger(toast);
+			}
+			pwdLoading = false;
+		}
+	}
 </script>
 
-<h1 class="h1">User page for: {user?.email}</h1>
-
-<div class="mt-8 flex flex-col items-center">
-	<div class="flex flex-1 items-center">
-		<button class="variant-filled-tertiary btn btn-sm mx-3 flex" on:click={SendResetPwdEmail}
-			>Send me a "reset password" email</button
-		>
-		<div class="flex flex-1">
-			{#if !pwdLoading}
-				<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
-			{:else}
-				<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
-			{/if}
-		</div>
+<h3 class="h3">User page for: {user?.email}</h3>
+<div class="container rounded-lg border border-secondary-600 bg-primary-500 p-4 text-secondary-500">
+	<div>
+		<form on:submit|preventDefault={handleUserDetailsSubmit}>
+			<p class="mb-2">You can change your details here:</p>
+			<label for="first_name">First Name</label>
+			<input
+				name="first_name"
+				id="first_name"
+				type="text"
+				class="input p-2 font-extrabold text-primary-400 focus:bg-secondary-400 focus:outline-none"
+				bind:value={first_name}
+			/>
+			<label for="last_name">Last Name</label>
+			<input
+				name="last_name"
+				id="last_name"
+				type="text"
+				class="input p-2 font-extrabold text-primary-400 focus:bg-secondary-400 focus:outline-none"
+				bind:value={last_name}
+			/>
+			<div class="mt-3 flex flex-col items-end">
+				{#if !userDetailsLoading}
+					<button class="variant-filled-tertiary btn btn-sm mx-3 flex">Save</button>
+				{:else}
+					<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
+				{/if}
+			</div>
+		</form>
 	</div>
 </div>
+
 <div
 	class="container grid-cols-4 gap-4 rounded-lg border border-secondary-600 bg-primary-500 p-4 text-secondary-500 md:grid-cols-1"
 >
@@ -103,7 +185,7 @@
 			every day.)
 		</p>
 	</div>
-	<form on:submit={handleSubmit}>
+	<form on:submit={handleNotesSubmit}>
 		<div class="mt-1 flex w-full">
 			<div class="grow">
 				<input
@@ -118,9 +200,7 @@
 				{#if noteLoading}
 					<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
 				{:else}
-					<button type="submit" class="variant-filled-tertiary rounded px-4 py-2">
-						Add Note
-					</button>
+					<button type="submit" class="variant-filled-tertiary rounded px-4 py-2"> Add </button>
 				{/if}
 			</div>
 		</div>
@@ -140,7 +220,20 @@
 		</ul>
 	</div>
 </div>
-
+<div class="mt-8 flex flex-col items-center">
+	<div class="flex flex-1 items-center">
+		<button class="variant-filled-tertiary btn btn-sm mx-3 flex" on:click={SendResetPwdEmail}
+			>Send me a "reset password" email</button
+		>
+		<div class="flex flex-1">
+			{#if !pwdLoading}
+				<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
+			{:else}
+				<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
+			{/if}
+		</div>
+	</div>
+</div>
 <div class="flex flex-col items-center">
 	<div class="flex">
 		<a href="/auth/delete">
