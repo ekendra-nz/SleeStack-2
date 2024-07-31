@@ -1,4 +1,4 @@
-# create-svelte
+# SleeStack 2
 
 ## To-do
 
