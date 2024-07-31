@@ -39,12 +39,11 @@ export const actions: Actions = {
 		}
 	},
 	signin: async ({ request, locals: { supabase } }) => {
-		console.log('signin');
-
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
 		const token = formData.get('cf-turnstile-response');
+		console.log('token:', token);
 		const SECRET_KEY = PRIVATE_TURNSTILE_SECRET_KEY;
 
 		const { success, errors } = await validateToken(token, SECRET_KEY);

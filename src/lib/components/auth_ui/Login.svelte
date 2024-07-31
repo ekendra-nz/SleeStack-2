@@ -252,6 +252,12 @@
 			>Forgot your password?</a
 		>
 	</div>
+	{#if captchaEnabled}
+		<div class="mt-3">
+			<!-- <Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} /> -->
+			<Turnstile siteKey="0x4AAAAAAAgL1PLE_9BkTBTp" />
+		</div>
+	{/if}
 	<div class="mx-5 mt-5 flex flex-col items-center">
 		<div class="flex w-3/4 flex-row items-center lg:w-1/2">
 			<div class="mx-auto flex-auto">
@@ -276,11 +282,6 @@
 			</div>
 		</div>
 	</div>
-	{#if captchaEnabled}
-		<div class="mt-3">
-			<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} />
-		</div>
-	{/if}
 </form>
 
 <style>
