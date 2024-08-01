@@ -23,6 +23,7 @@
 	let email: string = '';
 	let loading: boolean = false;
 	let rego: boolean = false;
+	let resetCaptcha: () => void | undefined;
 
 	function isValidEmail(email: string): boolean {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,6 +45,7 @@
 			};
 			toastStore.trigger(toast);
 			loading = false;
+			resetCaptcha?.();
 			return;
 		}
 		if (strength < 4) {
@@ -54,6 +56,7 @@
 			};
 			toastStore.trigger(toast);
 			loading = false;
+			resetCaptcha?.();
 			return;
 		}
 
@@ -83,6 +86,7 @@
 					timeout: 5000
 				};
 				toastStore.trigger(toast);
+				resetCaptcha?.();
 				loading = false;
 			}
 			applyAction(result);
@@ -117,6 +121,7 @@
 					timeout: 5000
 				};
 				toastStore.trigger(toast);
+				resetCaptcha?.();
 				loading = false;
 			}
 			applyAction(result);
@@ -257,7 +262,7 @@
 	</div>
 	{#if captchaEnabled}
 		<div class="mt-3">
-			<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} />
+			<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} bind:resetCaptcha />
 		</div>
 	{/if}
 	<div class="mx-5 mt-5 flex flex-col items-center">
