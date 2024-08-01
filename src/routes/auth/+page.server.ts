@@ -12,7 +12,10 @@ export const actions: Actions = {
 
 		if (captchaEnabled === 'true') {
 			const captchaToken = formData.get('cf-turnstile-response') as string;
-
+			return fail(400, {
+				errorType: 'fail',
+				error: 'captchaToken: ' + captchaToken
+			});
 			const { data, error } = await supabase.auth.signUp({
 				email,
 				password,

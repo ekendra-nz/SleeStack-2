@@ -258,7 +258,6 @@
 	{#if captchaEnabled}
 		<div class="mt-3">
 			<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} />
-			<!-- <Turnstile siteKey="0x4AAAAAAAgL1PLE_9BkTBTp" /> -->
 		</div>
 	{/if}
 	<div class="mx-5 mt-5 flex flex-col items-center">
