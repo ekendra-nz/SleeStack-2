@@ -2,10 +2,7 @@
 
 ## To-do
 
-- ios not responding to 'goto'
-- remove localhost from turnstile widget
-
-- don't show captcha protected submit buttons until it returns success
+- ios not responding to 'goto' ???
 
 - put all DB calls in try/catch
 

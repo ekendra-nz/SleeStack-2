@@ -21,6 +21,7 @@
 	let pwdLoading: boolean = false;
 	let noteLoading: boolean = false;
 	let userDetailsLoading: boolean = false;
+	let turnStileSuccess: boolean = false;
 	let first_name: any = '';
 	let last_name: string = '';
 
@@ -33,6 +34,7 @@
 
 	function handleTurnstileCallback(response: any) {
 		turnstileToken = response.token.toString();
+		turnStileSuccess = true;
 		// console.log('Turnstile token:', turnstileToken);
 	}
 
@@ -256,17 +258,19 @@
 				on:callback={(event) => handleTurnstileCallback(event.detail)}
 			/>
 		</div>
-		<button class="variant-filled-tertiary btn btn-sm mx-3 flex" on:click={SendResetPwdEmail}
-			>Send me a "reset password" email</button
-		>
+		{#if turnStileSuccess}
+			<button class="variant-filled-tertiary btn btn-sm mx-3 flex" on:click={SendResetPwdEmail}
+				>Send me a "reset password" email</button
+			>
 
-		<div class="flex flex-1">
-			{#if !pwdLoading}
-				<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
-			{:else}
-				<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
-			{/if}
-		</div>
+			<div class="flex flex-1">
+				{#if !pwdLoading}
+					<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
+				{:else}
+					<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
+				{/if}
+			</div>
+		{/if}
 	</div>
 </div>
 <div class="flex flex-col items-center">

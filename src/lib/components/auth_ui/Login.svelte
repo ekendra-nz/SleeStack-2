@@ -19,6 +19,12 @@
 	let loading: boolean = false;
 	let rego: boolean = false;
 	let resetCaptcha: number = 0;
+	let turnStileSuccess: boolean = false;
+
+	function handleTurnstileCallback(response: any) {
+		turnStileSuccess = true;
+		// console.log('Turnstile token:', turnstileToken);
+	}
 
 	function isValidEmail(email: string): boolean {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -262,33 +268,38 @@
 	{#if settings.useCaptcha}
 		{#key resetCaptcha}
 			<div class="mt-3">
-				<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} />
+				<Turnstile
+					siteKey={PUBLIC_TURNSTILE_SITE_KEY}
+					on:callback={(event) => handleTurnstileCallback(event.detail)}
+				/>
 			</div>
 			<!-- bind:resetCaptcha -->
 		{/key}
 	{/if}
 	<div class="mx-5 mt-5 flex flex-col items-center">
 		<div class="flex w-3/4 flex-row items-center lg:w-1/2">
-			<div class="mx-auto flex-auto">
-				<button class="variant-ghost-tertiary btn btn-sm" on:mousedown={() => (rego = true)}
-					>Register</button
-				>
-			</div>
-			<div class="mx-1 flex-auto">or</div>
-			<div class="mx-auto flex-auto">
-				<button
-					class="variant-filled-tertiary btn btn-sm"
-					type="submit"
-					on:click={() => (rego = false)}>Sign In</button
-				>
-			</div>
-			<div class="mx-2 flex">
-				{#if !loading}
-					<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
-				{:else}
-					<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
-				{/if}
-			</div>
+			{#if turnStileSuccess}
+				<div class="mx-auto flex-auto">
+					<button class="variant-ghost-tertiary btn btn-sm" on:mousedown={() => (rego = true)}
+						>Register</button
+					>
+				</div>
+				<div class="mx-1 flex-auto">or</div>
+				<div class="mx-auto flex-auto">
+					<button
+						class="variant-filled-tertiary btn btn-sm"
+						type="submit"
+						on:click={() => (rego = false)}>Sign In</button
+					>
+				</div>
+				<div class="mx-2 flex">
+					{#if !loading}
+						<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
+					{:else}
+						<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
+					{/if}
+				</div>
+			{/if}
 		</div>
 	</div>
 </form>
