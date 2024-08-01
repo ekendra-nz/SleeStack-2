@@ -46,12 +46,18 @@ export async function POST({ request }) {
 				console.log('isThisAllowed: ', isThisAllowed);
 				if (isThisAllowed) {
 					await logThisCronAttempt(isThisAllowed, now);
-					// do cron stuff
 					//
+					// --------------------------------------------------   do cron stuff ----------------------------------------------------
 					//
+					const supabase_private = await createClient(
+						PUBLIC_SUPABASE_URL,
+						PRIVATE_SUPABASE_SERVICE_ROLE
+					);
+
+					const { data, error } = await supabase_private.from('notes').delete().neq('id', '');
+
 					//
-					//
-					//
+					// --------------------------------------------------   end cron stuff ----------------------------------------------------
 					//
 
 					return json(
@@ -60,7 +66,9 @@ export async function POST({ request }) {
 							now: now,
 							last_cron_attempt: now,
 							last_cron_allowed: last_cron_allowed,
-							debug: debugStuff
+							debug: debugStuff,
+							data: data,
+							error: error
 						},
 						{ status: 200 }
 					);
