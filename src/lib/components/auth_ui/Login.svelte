@@ -278,7 +278,7 @@
 	{/if}
 	<div class="mx-5 mt-5 flex flex-col items-center">
 		<div class="flex w-3/4 flex-row items-center lg:w-1/2">
-			{#if turnStileSuccess}
+			{#if turnStileSuccess || !settings.useCaptcha}
 				<div class="mx-auto flex-auto">
 					<button class="variant-ghost-tertiary btn btn-sm" on:mousedown={() => (rego = true)}
 						>Register</button

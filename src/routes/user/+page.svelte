@@ -237,13 +237,11 @@
 	</form>
 </div>
 
-<div
-	class="first-letter: flex rounded-lg border border-secondary-600 bg-primary-500 p-4 text-secondary-500"
->
-	<div class=" px-16 py-2">
+<div class="container rounded-lg border border-secondary-600 bg-primary-500 p-4 text-secondary-500">
+	<div>
 		<h2 class="h2 mb-2 text-left underline">Notes</h2>
 
-		<ul class=" list-disc">
+		<ul class="ml-10 list-disc">
 			{#each notes as note}
 				<li>{note.note}</li>
 			{/each}
@@ -251,27 +249,27 @@
 	</div>
 </div>
 <div class="mt-8 flex flex-col items-center">
-	<div class="flex flex-1 items-center">
-		<div class="mt-3">
-			<Turnstile
-				siteKey={PUBLIC_TURNSTILE_SITE_KEY}
-				on:callback={(event) => handleTurnstileCallback(event.detail)}
-			/>
-		</div>
-		{#if turnStileSuccess}
-			<button class="variant-filled-tertiary btn btn-sm mx-3 flex" on:click={SendResetPwdEmail}
-				>Send me a "reset password" email</button
-			>
-
-			<div class="flex flex-1">
-				{#if !pwdLoading}
-					<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
-				{:else}
-					<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
-				{/if}
+	{#if settings.useCaptcha}<div class="flex flex-1 items-center">
+			<div class="mt-3">
+				<Turnstile
+					siteKey={PUBLIC_TURNSTILE_SITE_KEY}
+					on:callback={(event) => handleTurnstileCallback(event.detail)}
+				/>
 			</div>
-		{/if}
-	</div>
+		</div>{/if}
+	{#if turnStileSuccess || !settings.useCaptcha}
+		<button class="variant-filled-tertiary btn btn-sm mx-3 flex" on:click={SendResetPwdEmail}
+			>Send me a "reset password" email</button
+		>
+
+		<div class="flex flex-1">
+			{#if !pwdLoading}
+				<Icon icon="ic:baseline-lock" width="1.2em" height="1.2em" class="text-tertiary-500" />
+			{:else}
+				<Icon icon="line-md:loading-loop" width="2em" height="2em" class="text-tertiary-500" />
+			{/if}
+		</div>
+	{/if}
 </div>
 <div class="flex flex-col items-center">
 	<div class="flex">
