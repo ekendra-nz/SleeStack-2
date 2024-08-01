@@ -3,7 +3,7 @@
 	// Forms
 	import type { ActionResult } from '@sveltejs/kit';
 	import { applyAction, deserialize } from '$app/forms';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { Turnstile } from 'svelte-turnstile';
 	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
 
@@ -12,7 +12,7 @@
 	// to toggle on and off Captch for testing purposes (otherwise it won't accept localhost)
 	// Must also turn it off here:
 	// https://supabase.com/dashboard/project/mhcgkcjyoqigqhvzvzfw/settings/auth
-	const captchaEnabled: boolean = false;
+	const captchaEnabled: boolean = true;
 
 	// ----------------------------------------------------------------------------------------------------
 	// Toast
@@ -99,14 +99,15 @@
 				const toast: ToastSettings = {
 					message: 'Signed in.',
 					background: 'variant-filled-success',
-					timeout: 5000
+					timeout: 3000
 				};
 				toastStore.trigger(toast);
 				loading = false;
 
-				goto('/user');
+				// goto('/user');
 				// await goto('/user');
-				// setTimeout(() => goto('/user'), 100); //
+				await invalidateAll();
+				setTimeout(() => goto('/user'), 100); //
 			} else if (result.type === 'failure') {
 				console.log('result.data', result.data);
 				const toast: ToastSettings = {

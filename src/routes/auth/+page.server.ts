@@ -77,6 +77,7 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
+
 		const captchaEnabled = formData.get('captchaEnabled');
 
 		if (captchaEnabled === 'true') {
@@ -88,7 +89,7 @@ export const actions: Actions = {
 				options: { captchaToken }
 			});
 			if (error) {
-				// console.error(error);
+				console.error(error);
 				return fail(400, { email, error: error.message });
 			} else {
 				return { success: true };
@@ -100,7 +101,7 @@ export const actions: Actions = {
 				password
 			});
 			if (error) {
-				// console.error(error);
+				console.error(error);
 				return fail(400, { email, error: error.message });
 			} else {
 				return { success: true };
