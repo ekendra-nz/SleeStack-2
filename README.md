@@ -2,8 +2,6 @@
 
 ## To-do
 
-- add cron to wipe user notes every day
-
 - ios not responding to 'goto'
 - remove localhost from turnstile widget
 

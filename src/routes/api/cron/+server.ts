@@ -24,7 +24,7 @@ export async function POST({ request }) {
 	// ----------------------- override cron permission with this boolean ---------------------
 	//
 	const permit = true; // turn to false to switch off all cron ops
-	const override = true; // turn to true to override the cron permission
+	const override = false; // turn to true to override the cron permission and allow all ops
 	//
 	// --------------------------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ export async function POST({ request }) {
 		const { code } = await request.json();
 		if (code == 'specialSecretCode-108@*$&($#&(*))!!!' && permit) {
 			//
-			let isThisAllowed = override;
+			let isThisAllowed = false;
 			const now = new UTCDate();
 
 			console.log('now: ', now);
@@ -40,22 +40,24 @@ export async function POST({ request }) {
 			const last_cron_allowed = await logThisCronAttempt(isThisAllowed, now);
 			console.log('last_allowed: ', last_cron_allowed);
 
-			if (last_cron_allowed) {
+			if (last_cron_allowed || override) {
 				const { sheduleAllow, debugStuff } = checkCronSchedule(now, last_cron_allowed);
 				isThisAllowed = sheduleAllow;
 
 				console.log('isThisAllowed: ', isThisAllowed);
-				if (isThisAllowed) {
+				if (isThisAllowed || override) {
 					await logThisCronAttempt(isThisAllowed, now);
 					//
 					// --------------------------------------------------   do cron stuff ----------------------------------------------------
 					//
+
+					// delete all user notes from table
 					const supabase_private = await createClient(
 						PUBLIC_SUPABASE_URL,
 						PRIVATE_SUPABASE_SERVICE_ROLE
 					);
 
-					const { data, error } = await supabase_private.from('notes').delete().neq('id', '');
+					await supabase_private.from('notes').delete().neq('id', 0);
 
 					//
 					// --------------------------------------------------   end cron stuff ----------------------------------------------------
@@ -67,9 +69,7 @@ export async function POST({ request }) {
 							now: now,
 							last_cron_attempt: now,
 							last_cron_allowed: last_cron_allowed,
-							debug: debugStuff,
-							data: data,
-							error: error
+							debug: debugStuff
 						},
 						{ status: 200 }
 					);
