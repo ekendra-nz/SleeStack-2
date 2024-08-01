@@ -23,7 +23,8 @@ export async function POST({ request }) {
 	//
 	// ----------------------- override cron permission with this boolean ---------------------
 	//
-	const permit = true;
+	const permit = true; // turn to false to switch off all cron ops
+	const override = true; // turn to true to override the cron permission
 	//
 	// --------------------------------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ export async function POST({ request }) {
 		const { code } = await request.json();
 		if (code == 'specialSecretCode-108@*$&($#&(*))!!!' && permit) {
 			//
-			let isThisAllowed = false;
+			let isThisAllowed = override;
 			const now = new UTCDate();
 
 			console.log('now: ', now);
