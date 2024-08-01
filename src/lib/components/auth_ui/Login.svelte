@@ -264,6 +264,7 @@
 		<div class="mt-3">
 			<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} bind:resetCaptcha />
 		</div>
+		<button on:click={() => resetCaptcha?.()}> Reset </button>
 	{/if}
 	<div class="mx-5 mt-5 flex flex-col items-center">
 		<div class="flex w-3/4 flex-row items-center lg:w-1/2">
