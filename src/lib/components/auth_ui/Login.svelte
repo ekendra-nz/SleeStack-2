@@ -6,15 +6,10 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import { Turnstile } from 'svelte-turnstile';
 	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
+	import { siteSettingsClient } from '$lib/stores';
 
-	// ----------------------------------------------------------------------------------------------------
-	//
-	// to toggle on and off Captch for testing purposes (otherwise it won't accept localhost)
-	// Must also turn it off here:
-	// https://supabase.com/dashboard/project/mhcgkcjyoqigqhvzvzfw/settings/auth
-	const captchaEnabled: boolean = true;
+	$: settings = $siteSettingsClient;
 
-	// ----------------------------------------------------------------------------------------------------
 	// Toast
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { ToastSettings } from '@skeletonlabs/skeleton';
@@ -156,7 +151,6 @@
 </script>
 
 <form method="POST" class="text-primary-500" on:submit|preventDefault={handleSubmit}>
-	<input type="hidden" name="captchaEnabled" value={captchaEnabled} />
 	<p class="text-tertiary-500">
 		We strongly recommend that you use a password manager such as <a
 			href="https://bitwarden.com/"
@@ -265,7 +259,7 @@
 			>Forgot your password?</a
 		>
 	</div>
-	{#if captchaEnabled}
+	{#if settings.useCaptcha}
 		{#key resetCaptcha}
 			<div class="mt-3">
 				<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} />

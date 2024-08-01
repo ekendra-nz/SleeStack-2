@@ -8,9 +8,9 @@
 - remove localhost from turnstile widget
 
 - captcha on sign in:
-<https://supabase.com/docs/guides/auth/auth-captcha?queryGroups=captcha-method&captcha-method=turnstile-1>
+- don't show captcha protected submit buttons until it returns success
 
-- put all DB calls in try/catch 
+- put all DB calls in try/catch
 
 ## resources
 

@@ -1,6 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
+import { siteSettingsServer } from '$lib/stores';
 
 export const actions: Actions = {
 	signup: async ({ request, locals: { supabase } }) => {
@@ -8,9 +9,8 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
-		const captchaEnabled = formData.get('captchaEnabled');
 
-		if (captchaEnabled === 'true') {
+		if (siteSettingsServer.useCaptcha) {
 			const captchaToken = formData.get('cf-turnstile-response') as string;
 
 			const { data, error } = await supabase.auth.signUp({
@@ -78,11 +78,8 @@ export const actions: Actions = {
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
 
-		const captchaEnabled = formData.get('captchaEnabled');
-
-		if (captchaEnabled === 'true') {
+		if (siteSettingsServer.useCaptcha) {
 			const captchaToken = formData.get('cf-turnstile-response') as string;
-
 			const { error } = await supabase.auth.signInWithPassword({
 				email,
 				password,
