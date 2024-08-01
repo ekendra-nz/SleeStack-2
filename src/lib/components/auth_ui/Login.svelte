@@ -87,6 +87,7 @@
 				};
 				toastStore.trigger(toast);
 				resetCaptcha?.();
+				await invalidateAll();
 				loading = false;
 			}
 			applyAction(result);
@@ -122,9 +123,11 @@
 				};
 				toastStore.trigger(toast);
 				resetCaptcha?.();
+				await invalidateAll();
 				loading = false;
 			}
 			applyAction(result);
+			await invalidateAll();
 			loading = false;
 		}
 	};
