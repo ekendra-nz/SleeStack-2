@@ -12,7 +12,7 @@
 	// to toggle on and off Captch for testing purposes (otherwise it won't accept localhost)
 	// Must also turn it off here:
 	// https://supabase.com/dashboard/project/mhcgkcjyoqigqhvzvzfw/settings/auth
-	const captchaEnabled: boolean = true;
+	const captchaEnabled: boolean = false;
 
 	// ----------------------------------------------------------------------------------------------------
 	// Toast
