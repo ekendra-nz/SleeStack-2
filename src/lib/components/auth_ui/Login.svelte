@@ -23,7 +23,7 @@
 	let email: string = '';
 	let loading: boolean = false;
 	let rego: boolean = false;
-	let resetCaptcha: () => void | undefined;
+	let resetCaptcha: number = 0;
 
 	function isValidEmail(email: string): boolean {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -45,7 +45,7 @@
 			};
 			toastStore.trigger(toast);
 			loading = false;
-			resetCaptcha?.();
+			// resetCaptcha++;
 			return;
 		}
 		if (strength < 4) {
@@ -56,7 +56,7 @@
 			};
 			toastStore.trigger(toast);
 			loading = false;
-			resetCaptcha?.();
+			// resetCaptcha++;
 			return;
 		}
 
@@ -86,9 +86,10 @@
 					timeout: 5000
 				};
 				toastStore.trigger(toast);
-				resetCaptcha?.();
+
 				await invalidateAll();
 				loading = false;
+				resetCaptcha++;
 			}
 			applyAction(result);
 		} else {
@@ -117,17 +118,18 @@
 				console.log('result.data', result.data);
 				const toast: ToastSettings = {
 					message:
-						'There was a problem signing you in: <strong> ' + result.data?.error + '</strong>',
+						'There was a problem signing you in: <br /><strong> ' +
+						result.data?.error +
+						'</strong><br />Please try again.',
 					background: 'variant-filled-error',
 					timeout: 5000
 				};
 				toastStore.trigger(toast);
-				resetCaptcha?.();
-				await invalidateAll();
+
 				loading = false;
+				resetCaptcha++;
 			}
 			applyAction(result);
-			await invalidateAll();
 			loading = false;
 		}
 	};
@@ -264,15 +266,12 @@
 		>
 	</div>
 	{#if captchaEnabled}
-		<div class="mt-3">
-			<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} bind:resetCaptcha />
-		</div>
-		<button
-			class="variant-outline-primary btn btn-sm"
-			on:click|preventDefault={() => resetCaptcha?.()}
-		>
-			Reset
-		</button>
+		{#key resetCaptcha}
+			<div class="mt-3">
+				<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} />
+			</div>
+			<!-- bind:resetCaptcha -->
+		{/key}
 	{/if}
 	<div class="mx-5 mt-5 flex flex-col items-center">
 		<div class="flex w-3/4 flex-row items-center lg:w-1/2">
